@@ -1,0 +1,142 @@
+<div class="container pd">
+  @switch (state()) {
+    @case ('loading') {
+      <div class="pd__loading">
+        <app-loading-skeleton variant="block" height="480px"></app-loading-skeleton>
+        <div class="pd__loading-side">
+          <app-loading-skeleton variant="line" [count]="1" height="28px" width="70%"></app-loading-skeleton>
+          <app-loading-skeleton variant="line" [count]="1" height="18px" width="40%"></app-loading-skeleton>
+          <app-loading-skeleton variant="line" [count]="3"></app-loading-skeleton>
+          <app-loading-skeleton variant="block" height="52px"></app-loading-skeleton>
+        </div>
+      </div>
+    }
+    @case ('error') {
+      <app-empty-state kind="error" [title]="'common.errorTitle' | t" [body]="'common.errorBody' | t">
+        <a routerLink="/shop" class="btn btn-outline">{{ 'nav.shop' | t }}</a>
+      </app-empty-state>
+    }
+    @case ('success') {
+      <div class="pd__grid">
+        <!-- Gallery -->
+        <div class="pd-gallery">
+          <div class="pd-gallery__main-wrap">
+            <div #mainSwiperEl class="swiper pd-gallery__main">
+              <div class="swiper-wrapper">
+                @for (img of images(); track img._id) {
+                  <div class="swiper-slide">
+                    <img [src]="img.url | mediaUrl" [alt]="lang.pick(img.altAr, img.altEn) || productName()" loading="lazy" />
+                  </div>
+                } @empty {
+                  <div class="swiper-slide pd-gallery__placeholder"></div>
+                }
+              </div>
+            </div>
+            <button type="button" class="pd-gallery__prev" aria-label="Previous image">‹</button>
+            <button type="button" class="pd-gallery__next" aria-label="Next image">›</button>
+          </div>
+          @if (images().length > 1) {
+            <div #thumbSwiperEl class="swiper pd-gallery__thumbs">
+              <div class="swiper-wrapper">
+                @for (img of images(); track img._id) {
+                  <div class="swiper-slide pd-gallery__thumb">
+                    <img [src]="img.url | mediaUrl" [alt]="lang.pick(img.altAr, img.altEn) || productName()" loading="lazy" />
+                  </div>
+                }
+              </div>
+            </div>
+          }
+        </div>
+
+        <!-- Buy box -->
+        <div #buyBox class="pd-buybox">
+          <p class="text-label">{{ product()?.isBestSeller ? ('home.bestSellers' | t) : '' }}</p>
+          <h1 class="text-h1">{{ productName() }}</h1>
+          <app-rating [value]="product()?.ratingAverage" [count]="product()?.reviewCount" size="md"></app-rating>
+
+          <div class="pd-buybox__price">
+            <app-price-tag [price]="effectivePrice()" [compareAt]="product()?.discountType !== 'none' ? selectedVariant()?.price : undefined" size="lg"></app-price-tag>
+            <app-stock-badge [state]="selectedStockState"></app-stock-badge>
+          </div>
+
+          @if (variants().length > 1) {
+            <div class="pd-buybox__variants">
+              <p class="text-label">{{ 'product.selectFlavor' | t }} / {{ 'product.selectSize' | t }}</p>
+              <div class="variant-chips">
+                @for (v of variants(); track v._id) {
+                  <button type="button" class="variant-chip" [class.is-selected]="selectedVariant()?._id === v._id"
+                    [disabled]="v.stockState === 'out_of_stock'" (click)="selectVariant(v)">
+                    {{ v.flavor || v.nameEn || v.sku }}{{ v.sizeLabel ? ' · ' + v.sizeLabel : '' }}
+                  </button>
+                }
+              </div>
+            </div>
+          }
+
+          @if (selectedVariant()?.servings) {
+            <p class="text-muted">{{ selectedVariant()?.servings }} {{ 'product.servings' | t }}</p>
+          }
+
+          <div class="pd-buybox__actions">
+            <app-quantity-selector [value]="quantity()" [max]="20" (valueChange)="quantity.set($event)"></app-quantity-selector>
+            <button type="button" class="btn btn-primary pd-buybox__add" [disabled]="addingToCart() || selectedStockState === 'out_of_stock'" (click)="addToCart()">
+              {{ addingToCart() ? ('common.loading' | t) : ('common.addToCart' | t) }}
+            </button>
+            <button type="button" class="pd-buybox__wishlist" [class.is-active]="isWishlisted()" (click)="toggleWishlist()" aria-label="Toggle wishlist">
+              <svg width="20" height="20" viewBox="0 0 24 24" [attr.fill]="isWishlisted() ? 'currentColor' : 'none'">
+                <path d="M12 20.5s-7.5-4.6-10-9.2C.4 8 1.7 4.5 5 3.4c2.2-.7 4.4.2 5.7 2 .3.4.9.4 1.2 0 1.3-1.8 3.5-2.7 5.7-2 3.3 1.1 4.6 4.6 3 7.9-2.5 4.6-10 9.2-10 9.2Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+              </svg>
+            </button>
+          </div>
+
+          @if (selectedVariant()?.sku) {
+            <p class="text-meta text-muted pd-buybox__sku">{{ 'product.sku' | t }}: <span class="ltr-token">{{ selectedVariant()?.sku }}</span></p>
+          }
+
+          @if (productDescription()) {
+            <div class="pd-buybox__description" appReveal>
+              <p class="text-h3">{{ 'product.description' | t }}</p>
+              <p class="text-muted">{{ productDescription() }}</p>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Reviews -->
+      <section class="pd-reviews" appReveal>
+        <h2 class="text-h2">{{ 'common.reviews' | t }}</h2>
+
+        @switch (reviewsState()) {
+          @case ('loading') { <app-loading-skeleton variant="line" [count]="3"></app-loading-skeleton> }
+          @case ('error') { <p class="text-muted">{{ 'common.errorBody' | t }}</p> }
+          @case ('empty') { <p class="text-muted">{{ 'product.noReviews' | t }}</p> }
+          @case ('success') {
+            <ul class="review-list">
+              @for (r of reviews(); track r._id) {
+                <li class="review-item">
+                  <app-rating [value]="r.rating" size="sm"></app-rating>
+                  @if (r.title) { <p class="review-item__title">{{ r.title }}</p> }
+                  <p class="text-muted">{{ r.comment }}</p>
+                </li>
+              }
+            </ul>
+          }
+        }
+
+        @if (auth.isAuthenticated() && auth.role() === 'customer') {
+          <form class="review-form" (submit)="$event.preventDefault(); submitReview()">
+            <p class="text-h3">{{ 'product.writeReview' | t }}</p>
+            <div class="review-form__rating">
+              @for (star of [1,2,3,4,5]; track star) {
+                <button type="button" class="review-form__star" [class.is-filled]="star <= reviewForm.rating" (click)="reviewForm.rating = star" [attr.aria-label]="star + ' stars'">★</button>
+              }
+            </div>
+            <input type="text" [(ngModel)]="reviewForm.title" name="reviewTitle" [placeholder]="'product.writeReview' | t" />
+            <textarea rows="3" [(ngModel)]="reviewForm.comment" name="reviewComment" required></textarea>
+            <button type="submit" class="btn btn-primary" [disabled]="submittingReview()">{{ 'common.save' | t }}</button>
+          </form>
+        }
+      </section>
+    }
+  }
+</div>

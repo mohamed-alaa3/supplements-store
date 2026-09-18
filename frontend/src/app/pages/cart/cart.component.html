@@ -1,0 +1,256 @@
+<div class="container cart-page">
+  <h1 class="text-h1">{{ 'cart.title' | t }}</h1>
+
+  @if (!auth.isAuthenticated()) {
+    <app-empty-state
+      [title]="'cart.empty' | t"
+      [body]="'auth.loginTitle' | t"
+    >
+      <a
+        routerLink="/login"
+        [queryParams]="{ redirectTo: '/cart' }"
+        class="btn btn-primary"
+      >
+        {{ 'nav.login' | t }}
+      </a>
+    </app-empty-state>
+  } @else {
+
+    @switch (state()) {
+
+      @case ('loading') {
+        <div class="cart-page__grid">
+          <div class="cart-list">
+            <app-loading-skeleton
+              variant="block"
+              height="120px"
+              [count]="3"
+            ></app-loading-skeleton>
+          </div>
+
+          <app-loading-skeleton
+            variant="block"
+            height="220px"
+          ></app-loading-skeleton>
+        </div>
+      }
+
+      @case ('error') {
+        <app-empty-state
+          kind="error"
+          [title]="'common.errorTitle' | t"
+          [body]="'common.errorBody' | t"
+        >
+          <button
+            type="button"
+            class="btn btn-outline"
+            (click)="retry()"
+          >
+            {{ 'common.retry' | t }}
+          </button>
+        </app-empty-state>
+      }
+
+      @case ('success') {
+
+        @if ((cart.cart()?.items?.length ?? 0) === 0) {
+
+          <app-empty-state
+            [title]="'cart.empty' | t"
+            [body]="'cart.emptyBody' | t"
+          >
+            <a
+              routerLink="/shop"
+              class="btn btn-primary"
+            >
+              {{ 'nav.shop' | t }}
+            </a>
+          </app-empty-state>
+
+        } @else {
+
+          <div class="cart-page__grid">
+
+            <ul class="cart-list">
+
+              @for (item of cart.cart()?.items; track item._id) {
+
+                <li class="cart-row" appReveal>
+
+                  <div class="cart-row__media">
+                    @if (item.imageUrl) {
+                      <img
+                        [src]="item.imageUrl | mediaUrl"
+                        [alt]="lang.pick(item.productNameAr, item.productNameEn)"
+                        loading="lazy"
+                      />
+                    }
+                  </div>
+
+                  <div class="cart-row__body">
+
+                    <p class="cart-row__name">
+                      {{ lang.pick(item.productNameAr, item.productNameEn) }}
+                    </p>
+
+                    @if (item.variantLabel) {
+                      <p class="text-muted">
+                        {{ item.variantLabel }}
+                      </p>
+                    }
+
+                    @if (item.stockState) {
+                      <app-stock-badge
+                        [state]="item.stockState"
+                      ></app-stock-badge>
+                    }
+
+                  </div>
+
+                  <app-quantity-selector
+                    [value]="item.quantity"
+                    [max]="20"
+                    (valueChange)="onQuantityChange(item._id, $event)"
+                  ></app-quantity-selector>
+
+                  <span class="cart-row__price ltr-token">
+                    {{ item.lineTotal | number: '1.0-0' }} EGP
+                  </span>
+
+                  <button
+                    type="button"
+                    class="cart-row__remove"
+                    (click)="onRemove(item._id)"
+                    [attr.aria-label]="'common.remove' | t"
+                  >
+                    <svg
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      aria-hidden="true"
+                    >
+                      <path
+                        d="M6 6l12 12M18 6L6 18"
+                        stroke="currentColor"
+                        stroke-width="1.6"
+                        stroke-linecap="round"
+                      />
+                    </svg>
+                  </button>
+
+                </li>
+
+              }
+
+            </ul>
+
+            <aside class="cart-summary" appReveal>
+
+              <p class="text-h3">
+                {{ 'common.total' | t }}
+              </p>
+
+              <div class="cart-summary__coupon">
+
+                @if (cart.cart()?.couponCode) {
+
+                  <div class="cart-summary__coupon-applied">
+
+                    <span class="ltr-token">
+                      {{ cart.cart()?.couponCode }}
+                    </span>
+
+                    <button
+                      type="button"
+                      (click)="removeCoupon()"
+                    >
+                      {{ 'common.remove' | t }}
+                    </button>
+
+                  </div>
+
+                } @else {
+
+                  <div class="cart-summary__coupon-form">
+
+                    <input
+                      type="text"
+                      [(ngModel)]="couponCode"
+                      [placeholder]="'cart.couponCode' | t"
+                      autocomplete="off"
+                      (keyup.enter)="applyCoupon()"
+                    />
+
+                    <button
+                      type="button"
+                      class="btn btn-outline btn-sm"
+                      [disabled]="applyingCoupon() || !couponCode.trim()"
+                      (click)="applyCoupon()"
+                    >
+                      {{ 'cart.applyCoupon' | t }}
+                    </button>
+
+                  </div>
+
+                }
+
+              </div>
+
+              <div class="cart-summary__row">
+                <span>
+                  {{ 'common.subtotal' | t }}
+                </span>
+
+                <span class="ltr-token">
+                  {{ cart.cart()?.subtotal | number: '1.0-0' }} EGP
+                </span>
+              </div>
+
+              @if ((cart.cart()?.discountTotal ?? 0) > 0) {
+
+                <div class="cart-summary__row cart-summary__row--discount">
+
+                  <span>
+                    {{ 'common.discount' | t }}
+                  </span>
+
+                  <span class="ltr-token">
+                    -{{ cart.cart()?.discountTotal | number: '1.0-0' }} EGP
+                  </span>
+
+                </div>
+
+              }
+
+              <div class="cart-summary__row cart-summary__row--total">
+
+                <span>
+                  {{ 'common.total' | t }}
+                </span>
+
+                <span class="ltr-token">
+                  {{ cart.cart()?.total | number: '1.0-0' }} EGP
+                </span>
+
+              </div>
+
+              <a
+                routerLink="/checkout"
+                class="btn btn-primary cart-summary__checkout"
+              >
+                {{ 'cart.checkout' | t }}
+              </a>
+
+            </aside>
+
+          </div>
+
+        }
+
+      }
+
+    }
+
+  }
+</div>

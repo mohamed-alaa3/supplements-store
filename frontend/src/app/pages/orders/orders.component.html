@@ -1,0 +1,28 @@
+<div class="container orders-page">
+  <h1 class="text-h1">{{ 'orders.title' | t }}</h1>
+
+  @switch (state()) {
+    @case ('loading') { <app-loading-skeleton variant="block" height="90px" [count]="4"></app-loading-skeleton> }
+    @case ('error') { <app-empty-state kind="error" [title]="'common.errorTitle' | t" [body]="'common.errorBody' | t"></app-empty-state> }
+    @case ('empty') {
+      <app-empty-state [title]="'orders.empty' | t" [body]="''">
+        <a routerLink="/shop" class="btn btn-primary">{{ 'nav.shop' | t }}</a>
+      </app-empty-state>
+    }
+    @case ('success') {
+      <ul class="orders-list">
+        @for (order of orders(); track order._id) {
+          <li class="order-row" appReveal>
+            <div>
+              <p class="order-row__number ltr-token">{{ order.orderNumber }}</p>
+              <p class="text-muted text-meta">{{ order.createdAt | date: 'mediumDate' }}</p>
+            </div>
+            <span [class]="statusClass(order.orderStatus)">{{ order.orderStatus }}</span>
+            <span class="ltr-token order-row__total">{{ order.total | number: '1.0-0' }} EGP</span>
+            <a [routerLink]="['/orders', order._id]" class="btn btn-outline btn-sm">{{ 'orders.viewDetails' | t }}</a>
+          </li>
+        }
+      </ul>
+    }
+  }
+</div>

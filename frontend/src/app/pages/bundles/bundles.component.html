@@ -1,0 +1,37 @@
+<div class="container bundles-page">
+  <h1 class="text-h1">{{ 'nav.bundles' | t }}</h1>
+  <p class="text-muted bundles-page__intro">{{ 'home.bundlesTitle' | t }}</p>
+
+  @switch (state()) {
+    @case ('loading') { <app-loading-skeleton variant="card" [count]="4"></app-loading-skeleton> }
+    @case ('error') { <app-empty-state kind="error" [title]="'common.errorTitle' | t" [body]="'common.errorBody' | t"></app-empty-state> }
+    @case ('empty') { <app-empty-state [title]="'common.noResultsTitle' | t" [body]="'common.noResultsBody' | t"></app-empty-state> }
+    @case ('success') {
+      <div class="bundles-grid">
+        @for (bundle of bundles(); track bundle._id) {
+          <div class="bundle-full-card" appReveal>
+            <div class="bundle-full-card__media">
+              @if (bundle.imageUrl) { <img [src]="bundle.imageUrl | mediaUrl" [alt]="name(bundle)" loading="lazy" /> }
+              @if (bundle.discountValue) {
+                <span class="badge badge--volt">{{ bundle.discountType === 'percentage' ? '-' + bundle.discountValue + '%' : ('common.discount' | t) }}</span>
+              }
+            </div>
+            <div class="bundle-full-card__body">
+              <p class="text-h3">{{ name(bundle) }}</p>
+              @if (bundle.bundlePrice) { <p class="ltr-token text-price">{{ bundle.bundlePrice | number: '1.0-0' }} EGP</p> }
+              <p class="text-muted text-meta">{{ bundle.items.length }} {{ lang.lang() === 'ar' ? 'عناصر' : 'items' }}</p>
+
+              @if (bundle.bundleType === 'fixed') {
+                <button type="button" class="btn btn-primary" [disabled]="addingId() === bundle._id" (click)="quickAdd(bundle)">
+                  {{ addingId() === bundle._id ? ('common.loading' | t) : ('common.addToCart' | t) }}
+                </button>
+              } @else {
+                <button type="button" class="btn btn-outline" (click)="customize(bundle)">{{ 'nav.bundleBuilder' | t }}</button>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    }
+  }
+</div>

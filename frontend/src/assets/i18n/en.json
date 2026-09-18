@@ -1,0 +1,190 @@
+{
+  "nav": {
+    "home": "Home",
+    "shop": "Shop All",
+    "bundles": "Bundles",
+    "bundleBuilder": "Build Your Own Bundle",
+    "about": "About Us",
+    "contact": "Contact Us",
+    "search": "Search",
+    "account": "Account",
+    "cart": "Cart",
+    "wishlist": "Wishlist",
+    "login": "Log in",
+    "logout": "Log out",
+    "orders": "Orders",
+    "sellerDashboard": "Seller Dashboard",
+    "adminDashboard": "Admin Dashboard",
+    "faq": "FAQ"
+  },
+
+  "footer": {
+    "tagline": "Fuel your training with formulas built for performance.",
+    "shop": "Shop",
+    "company": "Company",
+    "support": "Support",
+    "newsletterTitle": "Get 10% off your first order",
+    "newsletterCta": "Subscribe",
+    "rights": "All rights reserved."
+  },
+
+  "common": {
+    "loading": "Loading…",
+    "retry": "Retry",
+    "seeAll": "See all",
+    "addToCart": "Add to cart",
+    "outOfStock": "Out of stock",
+    "lowStock": "Low stock",
+    "inStock": "In stock",
+    "quantity": "Quantity",
+    "remove": "Remove",
+    "apply": "Apply",
+    "save": "Save",
+    "cancel": "Cancel",
+    "continue": "Continue",
+    "back": "Back",
+    "close": "Close",
+    "price": "Price",
+    "total": "Total",
+    "subtotal": "Subtotal",
+    "discount": "Discount",
+    "shipping": "Shipping",
+    "from": "From",
+    "reviews": "Reviews",
+    "noResultsTitle": "Nothing here yet",
+    "noResultsBody": "Try adjusting your filters or search terms.",
+    "errorTitle": "Something went wrong",
+    "errorBody": "We could not load this. Please try again.",
+    "genericError": "An error occurred"
+  },
+
+  "home": {
+    "heroTitle": "Train harder. Recover smarter.",
+    "heroSubtitle": "Lab-tested supplements for every stage of your program.",
+    "heroCta": "Shop the range",
+    "featured": "Featured this week",
+    "bestSellers": "Best sellers",
+    "categoriesTitle": "Shop by goal",
+    "bundlesTitle": "Stacked bundles, better value"
+  },
+
+  "shop": {
+    "title": "Shop all",
+    "filters": "Filters",
+    "sortBy": "Sort by",
+    "sortNewest": "Newest",
+    "sortPriceAsc": "Price: low to high",
+    "sortPriceDesc": "Price: high to low",
+    "sortRating": "Top rated",
+    "sortPopularity": "Most popular",
+    "category": "Category",
+    "brand": "Brand",
+    "priceRange": "Price range",
+    "rating": "Minimum rating",
+    "inStockOnly": "In stock only",
+    "clearFilters": "Clear filters",
+    "resultsCount": "{count} products"
+  },
+
+  "product": {
+    "selectFlavor": "Flavor",
+    "selectSize": "Size",
+    "servings": "servings",
+    "sku": "SKU",
+    "addedToCart": "Added to cart",
+    "addedToWishlist": "Added to wishlist",
+    "removedFromWishlist": "Removed from wishlist",
+    "description": "Description",
+    "writeReview": "Write a review",
+    "noReviews": "No reviews yet — be the first."
+  },
+
+  "cart": {
+    "title": "Your cart",
+    "empty": "Your cart is empty",
+    "emptyBody": "Browse the shop and add something that fits your goals.",
+    "couponCode": "Coupon code",
+    "applyCoupon": "Apply",
+    "checkout": "Checkout"
+  },
+
+  "auth": {
+    "loginTitle": "Welcome back",
+    "registerTitle": "Create your account",
+    "fullName": "Full name",
+    "email": "Email",
+    "phone": "Phone",
+    "password": "Password",
+    "confirmPassword": "Confirm password",
+    "loginCta": "Log in",
+    "registerCta": "Create account",
+    "noAccount": "Don't have an account?",
+    "haveAccount": "Already have an account?",
+    "signUp": "Sign up",
+    "signIn": "Sign in",
+
+    "verify": {
+      "title": "Verify your email",
+      "subtitle": "Enter the 6-digit code we sent to your email address.",
+      "success": "Email verified successfully!",
+      "codePlaceholder": "Enter 6-digit code",
+      "loading": "Verifying...",
+      "submit": "Verify email",
+      "resendIn": "Resend code in",
+      "resend": "Resend code",
+      "doNotShare": "Never share your verification code with anyone.",
+      "codeSent": "A new verification code has been sent."
+    }
+  },
+
+  "checkout": {
+    "title": "Checkout",
+    "contact": "Contact information",
+    "shippingAddress": "Shipping address",
+    "payment": "Payment method",
+    "cod": "Cash on delivery",
+    "reviewOrder": "Review order",
+    "placeOrder": "Place order",
+    "processing": "Placing your order…"
+  },
+
+  "orders": {
+    "title": "Your orders",
+    "empty": "You have not placed any orders yet.",
+    "orderNumber": "Order",
+    "status": "Status",
+    "viewDetails": "View details",
+    "cancel": "Cancel order"
+  },
+
+  "theme": {
+    "light": "Light",
+    "dark": "Dark"
+  },
+  "admin": {
+"overview": "Overview",
+  "statistics": "Dashboard statistics",
+  "management": "Management",
+  "quickActions": "Quick actions",
+
+  "products": "Products",
+  "productsDescription": "Manage products",
+
+  "orders": "Orders",
+  "ordersDescription": "Manage orders",
+
+  "categories": "Categories",
+  "categoriesDescription": "Organize products",
+
+  "customers": "Customers",
+  "customersDescription": "Manage customers",
+
+  "users": "Users",
+  "activeSellers": "Active sellers",
+  "pendingReviews": "Pending reviews",
+  "lowStock": "Low stock",
+
+  "loadErrorTitle": "Unable to load dashboard",
+  "loadErrorBody": "Something went wrong while loading the dashboard data."
+  }
+}

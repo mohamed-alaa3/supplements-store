@@ -1,0 +1,18 @@
+<div class="container admin-page">
+  <h1 class="text-h1">Customers</h1>
+  @if (loading()) {
+    <app-loading-skeleton variant="block" height="60px" [count]="6"></app-loading-skeleton>
+  } @else {
+    <div class="dashboard-table">
+      @for (u of users(); track u._id) {
+        <div class="dashboard-row">
+          <span class="dashboard-row__name">{{ u.fullName }} <span class="text-muted text-meta">{{ u.email }}</span></span>
+          <select [ngModel]="u.role" (ngModelChange)="setRole(u, $event)">
+            @for (r of roles; track r) { <option [value]="r">{{ r }}</option> }
+          </select>
+          <button type="button" class="btn btn-ghost btn-sm" (click)="toggleActive(u)">{{ u.isActive ? 'Deactivate' : 'Activate' }}</button>
+        </div>
+      }
+    </div>
+  }
+</div>

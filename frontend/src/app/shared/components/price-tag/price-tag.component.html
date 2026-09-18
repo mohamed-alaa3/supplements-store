@@ -1,0 +1,9 @@
+<span class="price-tag" [class]="'price-tag--' + size">
+  @if (prefixFrom) {
+    <span class="price-tag__from text-muted">{{ 'common.from' | t }}</span>
+  }
+  <span class="price-tag__current ltr-token">{{ format(displayPrice) }}</span>
+  @if (hasDiscount()) {
+    <span class="price-tag__compare ltr-token">{{ format(compareAt!) }}</span>
+  }
+</span>

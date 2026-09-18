@@ -1,0 +1,99 @@
+<div class="container seller-page">
+  <h1 class="text-h1">{{ 'nav.sellerDashboard' | t }}</h1>
+
+  @if (loading()) {
+    <app-loading-skeleton variant="block" height="120px" [count]="2"></app-loading-skeleton>
+  } @else if (!profile()) {
+    <app-empty-state [title]="lang.lang() === 'ar' ? 'لا يوجد ملف بائع' : 'No seller profile'" [body]="''"></app-empty-state>
+  } @else {
+    <p class="seller-page__store">{{ profile()?.storeName }} · <span class="status-badge">{{ profile()?.status }}</span></p>
+
+    <div class="account-tabs">
+      <button type="button" [class.is-active]="tab() === 'overview'" (click)="setTab('overview')">Overview</button>
+      <button type="button" [class.is-active]="tab() === 'products'" (click)="setTab('products')">Products</button>
+      <button type="button" [class.is-active]="tab() === 'orders'" (click)="setTab('orders')">Orders</button>
+    </div>
+
+    @if (tab() === 'overview') {
+      @if (summary(); as s) {
+        <div class="stat-grid">
+          <div class="stat-card"><span class="stat-card__value">{{ s.totalProducts }}</span><span class="text-label">Products</span></div>
+          <div class="stat-card"><span class="stat-card__value">{{ s.activeProducts }}</span><span class="text-label">Active</span></div>
+          <div class="stat-card"><span class="stat-card__value">{{ s.totalOrders }}</span><span class="text-label">Orders</span></div>
+          <div class="stat-card"><span class="stat-card__value ltr-token">{{ s.totalRevenue | number: '1.0-0' }}</span><span class="text-label">Revenue (EGP)</span></div>
+          <div class="stat-card"><span class="stat-card__value">{{ s.lowStockVariants }}</span><span class="text-label">Low stock</span></div>
+        </div>
+      }
+    }
+
+    @if (tab() === 'products') {
+      <button type="button" class="btn btn-outline" (click)="showNewProductForm.set(!showNewProductForm())">+ New product</button>
+
+      @if (showNewProductForm()) {
+        <form #productForm="ngForm" class="dashboard-form" (submit)="$event.preventDefault(); createProduct(productForm)" novalidate>
+          <div class="dashboard-form__row">
+            <input type="text" name="nameAr" required [(ngModel)]="newProduct.nameAr" placeholder="Name (Arabic)" />
+            <input type="text" name="nameEn" required [(ngModel)]="newProduct.nameEn" placeholder="Name (English)" />
+          </div>
+          <div class="dashboard-form__row">
+            <select name="category" required [(ngModel)]="newProduct.category">
+              <option value="" disabled>Category</option>
+              @for (c of categories(); track c._id) { <option [value]="c._id">{{ categoryName(c) }}</option> }
+            </select>
+            <select name="productType" required [(ngModel)]="newProduct.productType">
+              @for (t of productTypes; track t) { <option [value]="t">{{ t }}</option> }
+            </select>
+            <input type="number" name="basePrice" required min="0" [(ngModel)]="newProduct.basePrice" placeholder="Price" />
+          </div>
+          <button type="submit" class="btn btn-primary" [disabled]="savingProduct()">{{ 'common.save' | t }}</button>
+        </form>
+      }
+
+      <div class="dashboard-table">
+        @for (p of products(); track p._id) {
+          <div class="dashboard-row">
+            <span class="dashboard-row__name">{{ lang.pick(p.nameAr, p.nameEn) }}</span>
+            <span class="ltr-token">{{ p.basePrice | number: '1.0-0' }} EGP</span>
+            <span class="status-badge">{{ p.isActive ? 'Active' : 'Inactive' }}</span>
+            <button type="button" class="btn btn-ghost btn-sm" (click)="openVariantForm(p)">+ Variant</button>
+            <button type="button" class="btn btn-ghost btn-sm" (click)="toggleProductStatus(p)">{{ p.isActive ? 'Deactivate' : 'Activate' }}</button>
+          </div>
+        }
+      </div>
+
+      @if (productForVariant(); as p) {
+        <div class="modal-backdrop" (click)="productForVariant.set(null)">
+          <form #variantForm="ngForm" class="modal-card dashboard-form" (click)="$event.stopPropagation()" (submit)="$event.preventDefault(); addVariant(variantForm)" novalidate>
+            <p class="text-h3">Add variant · {{ lang.pick(p.nameAr, p.nameEn) }}</p>
+            <input type="text" name="sku" required [(ngModel)]="newVariant.sku" placeholder="SKU" />
+            <div class="dashboard-form__row">
+              <input type="text" name="flavor" [(ngModel)]="newVariant.flavor" placeholder="Flavor" />
+              <input type="text" name="sizeLabel" [(ngModel)]="newVariant.sizeLabel" placeholder="Size" />
+            </div>
+            <input type="number" name="price" required min="0" [(ngModel)]="newVariant.price" placeholder="Price" />
+            <div class="dashboard-form__row">
+              <button type="submit" class="btn btn-primary">{{ 'common.save' | t }}</button>
+              <button type="button" class="btn btn-ghost" (click)="productForVariant.set(null)">{{ 'common.cancel' | t }}</button>
+            </div>
+          </form>
+        </div>
+      }
+    }
+
+    @if (tab() === 'orders') {
+      <div class="dashboard-table">
+        @for (o of orders(); track o._id) {
+          <div class="dashboard-row">
+            <span class="ltr-token dashboard-row__name">{{ o.orderNumber }}</span>
+            <span class="ltr-token">{{ o.total | number: '1.0-0' }} EGP</span>
+            <select [ngModel]="o.orderStatus" (ngModelChange)="updateOrderStatus(o, $event)">
+              @for (s of orderStatuses; track s) { <option [value]="s">{{ s }}</option> }
+            </select>
+          </div>
+        } @empty {
+          <app-empty-state [title]="'orders.empty' | t" [body]="''"></app-empty-state>
+        }
+      </div>
+    }
+  }
+</div>

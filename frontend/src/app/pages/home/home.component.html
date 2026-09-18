@@ -1,0 +1,606 @@
+<!-- ==========================================================================
+     HERO
+========================================================================== -->
+
+<section class="hero">
+  <div class="container hero__grid">
+
+    <div class="hero__copy">
+      <span
+        #heroEyebrow
+        class="hero__eyebrow"
+      >
+        {{ auth.isAuthenticated() ? '👋 ' : '' }}
+        {{ 'home.heroTitle' | t }}
+      </span>
+
+      <h1
+        #heroTitle
+        class="text-display hero__title"
+      >
+        {{ 'home.heroTitle' | t }}
+      </h1>
+
+      <p
+        #heroSubtitle
+        class="text-body-lg hero__subtitle text-muted"
+      >
+        {{ 'home.heroSubtitle' | t }}
+      </p>
+
+      <div
+        #heroCta
+        class="hero__cta"
+      >
+        <a
+          routerLink="/shop"
+          class="btn btn-primary"
+        >
+          {{ 'home.heroCta' | t }}
+        </a>
+
+        <a
+          routerLink="/bundles"
+          class="btn btn-outline"
+        >
+          {{ 'nav.bundles' | t }}
+        </a>
+      </div>
+    </div>
+
+
+    <div
+      #heroMedia
+      class="hero__media"
+      aria-hidden="true"
+    >
+      <div class="hero__media-blob"></div>
+
+      <div class="hero__media-badge">
+        <span class="text-h2">
+          100%
+        </span>
+
+        <span class="text-label">
+          {{
+            lang.lang() === 'ar'
+              ? 'نتائج مثبتة'
+              : 'Lab Tested'
+          }}
+        </span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ==========================================================================
+     BANNERS
+========================================================================== -->
+
+<section class="container hero-banners-section">
+
+  @switch (bannerState()) {
+
+    @case ('loading') {
+
+      <app-loading-skeleton
+        variant="block"
+        height="280px"
+      ></app-loading-skeleton>
+
+    }
+
+    @case ('error') {
+
+      <app-empty-state
+        kind="error"
+        [title]="'common.errorTitle' | t"
+        [body]="'common.errorBody' | t"
+      >
+        <button
+          type="button"
+          class="btn btn-outline"
+          (click)="retryBanners()"
+        >
+          {{ 'common.retry' | t }}
+        </button>
+      </app-empty-state>
+
+    }
+
+    @case ('success') {
+
+      <div class="hero-banners">
+
+        <div
+          #bannerSwiperEl
+          class="swiper hero-banners__swiper"
+        >
+
+          <div class="swiper-wrapper">
+
+            @for (
+              banner of banners();
+              track banner._id
+            ) {
+
+              <div class="swiper-slide hero-banner-slide">
+
+                <a
+                  [href]="banner.linkUrl || null"
+                  class="hero-banner-slide__link"
+                  [attr.aria-label]="bannerTitle(banner)"
+                >
+
+                  <img
+                    [src]="banner.imageUrl | mediaUrl"
+                    [alt]="bannerTitle(banner)"
+                    loading="lazy"
+                    decoding="async"
+                  />
+
+                  <div class="hero-banner-slide__copy">
+
+                    <h3 class="text-h2">
+                      {{ bannerTitle(banner) }}
+                    </h3>
+
+                    @if (bannerSubtitle(banner)) {
+
+                      <p>
+                        {{ bannerSubtitle(banner) }}
+                      </p>
+
+                    }
+
+                  </div>
+
+                </a>
+
+              </div>
+
+            }
+
+          </div>
+
+
+          <!-- Pagination -->
+
+          <div
+            class="hero-banners__pagination"
+            aria-label="Banner pagination"
+          ></div>
+
+
+          <!-- Navigation -->
+
+          <button
+            type="button"
+            class="hero-banners__prev"
+            aria-label="Previous banner"
+          >
+            ‹
+          </button>
+
+          <button
+            type="button"
+            class="hero-banners__next"
+            aria-label="Next banner"
+          >
+            ›
+          </button>
+
+        </div>
+
+      </div>
+
+    }
+
+  }
+
+</section>
+
+
+<!-- ==========================================================================
+     CATEGORIES
+========================================================================== -->
+
+<section
+  class="container section"
+  appReveal
+>
+
+  <app-section-header
+    [title]="'home.categoriesTitle' | t"
+    seeAllLink="/shop"
+  ></app-section-header>
+
+
+  @switch (categoriesState()) {
+
+    @case ('loading') {
+
+      <app-loading-skeleton
+        variant="card"
+        [count]="6"
+      ></app-loading-skeleton>
+
+    }
+
+
+    @case ('error') {
+
+      <app-empty-state
+        kind="error"
+        [title]="'common.errorTitle' | t"
+        [body]="'common.errorBody' | t"
+      >
+        <button
+          type="button"
+          class="btn btn-outline"
+          (click)="retryCategories()"
+        >
+          {{ 'common.retry' | t }}
+        </button>
+      </app-empty-state>
+
+    }
+
+
+    @case ('empty') {
+
+      <app-empty-state
+        [title]="'common.noResultsTitle' | t"
+        [body]="'common.noResultsBody' | t"
+      ></app-empty-state>
+
+    }
+
+
+    @case ('success') {
+
+      <div class="category-grid">
+
+        @for (
+          category of categories();
+          track category._id;
+          let i = $index
+        ) {
+
+          <a
+            [routerLink]="['/category', category.slug]"
+            class="category-card"
+            appReveal
+            [revealDelay]="i * 0.05"
+          >
+
+            <div class="category-card__media">
+
+              @if (category.imageUrl) {
+
+                <img
+                  [src]="category.imageUrl | mediaUrl"
+                  [alt]="categoryName(category)"
+                  loading="lazy"
+                  decoding="async"
+                />
+
+              }
+
+            </div>
+
+            <span class="category-card__name">
+              {{ categoryName(category) }}
+            </span>
+
+          </a>
+
+        }
+
+      </div>
+
+    }
+
+  }
+
+</section>
+
+
+<!-- ==========================================================================
+     FEATURED PRODUCTS
+========================================================================== -->
+
+<section
+  class="container section"
+  appReveal
+>
+
+  <app-section-header
+    [title]="'home.featured' | t"
+    seeAllLink="/shop"
+  ></app-section-header>
+
+
+  @switch (featuredState()) {
+
+    @case ('loading') {
+
+      <app-loading-skeleton
+        variant="card"
+        [count]="4"
+      ></app-loading-skeleton>
+
+    }
+
+
+    @case ('error') {
+
+      <app-empty-state
+        kind="error"
+        [title]="'common.errorTitle' | t"
+        [body]="'common.errorBody' | t"
+      >
+        <button
+          type="button"
+          class="btn btn-outline"
+          (click)="retryFeatured()"
+        >
+          {{ 'common.retry' | t }}
+        </button>
+      </app-empty-state>
+
+    }
+
+
+    @case ('empty') {
+
+      <app-empty-state
+        [title]="'common.noResultsTitle' | t"
+        [body]="'common.noResultsBody' | t"
+      ></app-empty-state>
+
+    }
+
+
+    @case ('success') {
+
+      <div class="product-grid">
+
+        @for (
+          product of featured();
+          track product._id;
+          let i = $index
+        ) {
+
+          <div
+            appReveal
+            [revealDelay]="(i % 4) * 0.06"
+          >
+
+            <app-product-card
+              [product]="product"
+              [isWishlisted]="isWishlisted(product._id)"
+              (toggleWishlist)="onToggleWishlist($event)"
+            ></app-product-card>
+
+          </div>
+
+        }
+
+      </div>
+
+    }
+
+  }
+
+</section>
+
+
+<!-- ==========================================================================
+     BEST SELLERS
+========================================================================== -->
+
+<section
+  class="container section"
+  appReveal
+>
+
+  <app-section-header
+    [title]="'home.bestSellers' | t"
+    seeAllLink="/shop"
+  ></app-section-header>
+
+
+  @switch (bestSellersState()) {
+
+    @case ('loading') {
+
+      <app-loading-skeleton
+        variant="card"
+        [count]="4"
+      ></app-loading-skeleton>
+
+    }
+
+
+    @case ('error') {
+
+      <app-empty-state
+        kind="error"
+        [title]="'common.errorTitle' | t"
+        [body]="'common.errorBody' | t"
+      >
+        <button
+          type="button"
+          class="btn btn-outline"
+          (click)="retryBestSellers()"
+        >
+          {{ 'common.retry' | t }}
+        </button>
+      </app-empty-state>
+
+    }
+
+
+    @case ('empty') {
+
+      <app-empty-state
+        [title]="'common.noResultsTitle' | t"
+        [body]="'common.noResultsBody' | t"
+      ></app-empty-state>
+
+    }
+
+
+    @case ('success') {
+
+      <div class="product-grid">
+
+        @for (
+          product of bestSellers();
+          track product._id;
+          let i = $index
+        ) {
+
+          <div
+            appReveal
+            [revealDelay]="(i % 4) * 0.06"
+          >
+
+            <app-product-card
+              [product]="product"
+              [isWishlisted]="isWishlisted(product._id)"
+              (toggleWishlist)="onToggleWishlist($event)"
+            ></app-product-card>
+
+          </div>
+
+        }
+
+      </div>
+
+    }
+
+  }
+
+</section>
+
+
+<!-- ==========================================================================
+     BUNDLES
+========================================================================== -->
+
+<section
+  class="container section section--bundles"
+  appReveal
+>
+
+  <app-section-header
+    [title]="'home.bundlesTitle' | t"
+    seeAllLink="/bundles"
+  ></app-section-header>
+
+
+  @switch (bundlesState()) {
+
+    @case ('loading') {
+
+      <app-loading-skeleton
+        variant="card"
+        [count]="3"
+      ></app-loading-skeleton>
+
+    }
+
+
+    @case ('error') {
+
+      <app-empty-state
+        kind="error"
+        [title]="'common.errorTitle' | t"
+        [body]="'common.errorBody' | t"
+      >
+        <button
+          type="button"
+          class="btn btn-outline"
+          (click)="retryBundles()"
+        >
+          {{ 'common.retry' | t }}
+        </button>
+      </app-empty-state>
+
+    }
+
+
+    @case ('empty') {
+
+      <app-empty-state
+        [title]="'common.noResultsTitle' | t"
+        [body]="'common.noResultsBody' | t"
+      ></app-empty-state>
+
+    }
+
+
+    @case ('success') {
+
+      <div class="bundle-grid">
+
+        @for (
+          bundle of bundles();
+          track bundle._id;
+          let i = $index
+        ) {
+
+          <a
+            [routerLink]="['/bundles']"
+            class="bundle-card"
+            appReveal
+            [revealDelay]="i * 0.08"
+          >
+
+            <div class="bundle-card__media">
+
+              @if (bundle.imageUrl) {
+
+                <img
+                  [src]="bundle.imageUrl | mediaUrl"
+                  [alt]="bundleName(bundle)"
+                  loading="lazy"
+                  decoding="async"
+                />
+
+              }
+
+
+              @if (bundle.discountValue) {
+
+                <span class="badge badge--volt bundle-card__badge">
+                  {{
+                    bundle.discountType === 'percentage'
+                      ? '-' + bundle.discountValue + '%'
+                      : ('common.discount' | t)
+                  }}
+                </span>
+
+              }
+
+            </div>
+
+            <p class="bundle-card__name">
+              {{ bundleName(bundle) }}
+            </p>
+
+          </a>
+
+        }
+
+      </div>
+
+    }
+
+  }
+
+</section>

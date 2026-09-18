@@ -1,0 +1,39 @@
+<div class="container confirm-page">
+  @switch (state()) {
+    @case ('loading') { <app-loading-skeleton variant="block" height="320px"></app-loading-skeleton> }
+    @case ('error') {
+      <app-empty-state kind="error" [title]="'common.errorTitle' | t" [body]="'common.errorBody' | t">
+        <a routerLink="/" class="btn btn-outline">{{ 'nav.home' | t }}</a>
+      </app-empty-state>
+    }
+    @case ('success') {
+      @if (order(); as o) {
+        <div class="confirm-card">
+          <svg #checkmark class="confirm-card__check" width="72" height="72" viewBox="0 0 72 72" fill="none">
+            <circle cx="36" cy="36" r="34" fill="var(--color-volt)"/>
+            <path d="M22 37l10 10 18-20" stroke="var(--color-volt-ink)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+
+          <h1 class="text-h1">{{ lang.lang() === 'ar' ? 'تم تأكيد طلبك!' : 'Your order is confirmed!' }}</h1>
+          <p class="text-muted">
+            {{ 'orders.orderNumber' | t }}: <span class="ltr-token confirm-card__number">{{ o.orderNumber }}</span>
+          </p>
+
+          <div class="confirm-card__summary">
+            <div class="confirm-card__row"><span>{{ 'common.subtotal' | t }}</span><span class="ltr-token">{{ o.subtotal | number: '1.0-0' }} EGP</span></div>
+            @if (o.discountTotal > 0) {
+              <div class="confirm-card__row"><span>{{ 'common.discount' | t }}</span><span class="ltr-token">-{{ o.discountTotal | number: '1.0-0' }} EGP</span></div>
+            }
+            <div class="confirm-card__row"><span>{{ 'common.shipping' | t }}</span><span class="ltr-token">{{ o.shippingFee | number: '1.0-0' }} EGP</span></div>
+            <div class="confirm-card__row confirm-card__row--total"><span>{{ 'common.total' | t }}</span><span class="ltr-token">{{ o.total | number: '1.0-0' }} EGP</span></div>
+          </div>
+
+          <div class="confirm-card__actions">
+            <a routerLink="/orders" class="btn btn-outline">{{ 'orders.title' | t }}</a>
+            <a routerLink="/shop" class="btn btn-primary">{{ 'nav.shop' | t }}</a>
+          </div>
+        </div>
+      }
+    }
+  }
+</div>

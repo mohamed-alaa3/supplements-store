@@ -1,0 +1,397 @@
+<div class="container admin-page">
+
+  <header class="products-header">
+    <div>
+      <p class="products-header__eyebrow">
+        {{ lang.pick("إدارة المتجر", "Store management") }}
+      </p>
+
+      <h1 class="text-h1">
+        {{ lang.pick("المنتجات", "Products") }}
+      </h1>
+
+      <p class="products-header__description">
+        {{ lang.pick(
+          "إدارة المنتجات والأسعار والحالة والمخزون",
+          "Manage products, prices, status and inventory"
+        ) }}
+      </p>
+    </div>
+
+    <button
+      type="button"
+      class="btn btn-primary add-product-btn"
+      (click)="addProduct()"
+    >
+      <span aria-hidden="true">+</span>
+      {{ lang.pick("إضافة منتج", "Add Product") }}
+    </button>
+  </header>
+
+
+  <section class="products-toolbar">
+
+    <form class="product-search" (ngSubmit)="onSearch()">
+
+      <span class="product-search__icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24">
+          <circle
+            cx="11"
+            cy="11"
+            r="6.5"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+          />
+          <path
+            d="m16 16 5 5"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linecap="round"
+          />
+        </svg>
+      </span>
+
+      <input
+        type="search"
+        [(ngModel)]="search"
+        name="search"
+        [placeholder]="lang.pick(
+          'ابحث عن منتج...',
+          'Search products...'
+        )"
+      />
+
+      @if (search) {
+        <button
+          type="button"
+          class="product-search__clear"
+          (click)="search = ''; load()"
+        >
+          ×
+        </button>
+      }
+
+      <button type="submit" class="product-search__submit">
+        {{ lang.pick("بحث", "Search") }}
+      </button>
+
+    </form>
+
+
+    <select
+      class="filter-select"
+      [(ngModel)]="status"
+      (ngModelChange)="load()"
+      [attr.aria-label]="lang.pick('حالة المنتج', 'Product status')"
+    >
+      <option value="all">
+        {{ lang.pick("كل الحالات", "All statuses") }}
+      </option>
+
+      <option value="active">
+        {{ lang.pick("نشط", "Active") }}
+      </option>
+
+      <option value="inactive">
+        {{ lang.pick("غير نشط", "Inactive") }}
+      </option>
+    </select>
+
+
+    <select
+      class="filter-select"
+      [(ngModel)]="productType"
+      (ngModelChange)="load()"
+      [attr.aria-label]="lang.pick('نوع المنتج', 'Product type')"
+    >
+      <option value="">
+        {{ lang.pick("كل الأنواع", "All types") }}
+      </option>
+
+      @for (type of productTypes; track type) {
+        <option [value]="type">
+          {{ getProductTypeLabel(type) }}
+        </option>
+      }
+    </select>
+
+
+    <select
+      class="filter-select"
+      [(ngModel)]="stock"
+      (ngModelChange)="load()"
+      [attr.aria-label]="lang.pick('حالة المخزون', 'Stock status')"
+    >
+      <option value="">
+        {{ lang.pick("كل المخزون", "All stock") }}
+      </option>
+
+      <option value="in_stock">
+        {{ lang.pick("متوفر", "In stock") }}
+      </option>
+
+      <option value="low_stock">
+        {{ lang.pick("مخزون منخفض", "Low stock") }}
+      </option>
+
+      <option value="out_of_stock">
+        {{ lang.pick("نفد المخزون", "Out of stock") }}
+      </option>
+    </select>
+
+
+    <select
+      class="filter-select"
+      [(ngModel)]="sort"
+      (ngModelChange)="load()"
+      [attr.aria-label]="lang.pick('ترتيب المنتجات', 'Sort products')"
+    >
+      <option value="newest">
+        {{ lang.pick("الأحدث", "Newest") }}
+      </option>
+
+      <option value="price_asc">
+        {{ lang.pick("السعر: من الأقل", "Price: Low to High") }}
+      </option>
+
+      <option value="price_desc">
+        {{ lang.pick("السعر: من الأعلى", "Price: High to Low") }}
+      </option>
+
+      <option value="rating">
+        {{ lang.pick("التقييم", "Rating") }}
+      </option>
+
+      <option value="popularity">
+        {{ lang.pick("الأكثر شعبية", "Popularity") }}
+      </option>
+    </select>
+
+
+    <button
+      type="button"
+      class="btn btn-outline clear-filters"
+      (click)="clearFilters()"
+    >
+      {{ lang.pick("مسح الفلاتر", "Clear filters") }}
+    </button>
+
+  </section>
+
+
+  @if (loading()) {
+
+    <section class="products-list-loading">
+      <app-loading-skeleton
+        variant="block"
+        height="88px"
+        [count]="6">
+      </app-loading-skeleton>
+    </section>
+
+  } @else if (error()) {
+
+    <section class="products-error">
+
+      <div class="products-error__icon">
+        !
+      </div>
+
+      <div class="products-error__content">
+        <h2>
+          {{ lang.pick(
+            "تعذر تحميل المنتجات",
+            "Unable to load products"
+          ) }}
+        </h2>
+
+        <p>
+          {{ lang.pick(
+            "حدث خطأ أثناء تحميل المنتجات.",
+            "Something went wrong while loading products."
+          ) }}
+        </p>
+      </div>
+
+      <button
+        type="button"
+        class="btn btn-outline"
+        (click)="load()"
+      >
+        {{ lang.pick("إعادة المحاولة", "Retry") }}
+      </button>
+
+    </section>
+
+  } @else if (products().length === 0) {
+
+    <div class="products-empty">
+
+      <app-empty-state
+        [title]="lang.pick(
+          'لا توجد منتجات',
+          'No products found'
+        )"
+        [body]="lang.pick(
+          'جرب تغيير البحث أو الفلاتر.',
+          'Try changing your search or filters.'
+        )">
+      </app-empty-state>
+
+ <button
+  type="button"
+  class="btn btn-primary"
+  (click)="addProduct()"
+>
+  <span aria-hidden="true">+</span>
+  {{ lang.pick("إضافة منتج", "Add Product") }}
+</button>
+
+    </div>
+
+  } @else {
+
+    <div class="products-result-bar">
+      <span>
+        {{ lang.pick("عدد المنتجات:", "Products:") }}
+        <strong>{{ products().length }}</strong>
+      </span>
+    </div>
+
+
+    <section class="products-table">
+
+      <div class="products-table__head">
+        <span>{{ lang.pick("المنتج", "Product") }}</span>
+        <span>{{ lang.pick("النوع", "Type") }}</span>
+        <span>{{ lang.pick("السعر", "Price") }}</span>
+        <span>{{ lang.pick("المخزون", "Stock") }}</span>
+        <span>{{ lang.pick("الحالة", "Status") }}</span>
+        <span>{{ lang.pick("الإجراءات", "Actions") }}</span>
+      </div>
+
+
+      @for (p of products(); track p._id) {
+
+        <article class="product-row">
+
+          <div class="product-cell product-cell--main">
+
+            <div class="product-image">
+              @if (p.primaryImageUrl) {
+                <img
+                  [src]="p.primaryImageUrl | mediaUrl"
+                  [alt]="lang.pick(p.nameAr, p.nameEn)"
+                  loading="lazy"
+                />
+              } @else {
+                <span aria-hidden="true">◇</span>
+              }
+            </div>
+
+            <div class="product-info">
+              <strong>
+                {{ lang.pick(p.nameAr, p.nameEn) }}
+              </strong>
+
+              <small>
+                {{ p.slug }}
+              </small>
+            </div>
+
+          </div>
+
+
+          <div class="product-cell">
+            <span class="type-badge">
+              {{ getProductTypeLabel(p.productType) }}
+            </span>
+          </div>
+
+
+          <div class="product-cell product-price">
+            <strong class="ltr-token">
+              {{ (p.priceFrom ?? p.basePrice) | number: "1.0-0" }}
+              EGP
+            </strong>
+
+            @if (p.compareAtPrice && p.compareAtPrice > p.basePrice) {
+              <small class="ltr-token">
+                {{ p.compareAtPrice | number: "1.0-0" }} EGP
+              </small>
+            }
+          </div>
+
+
+          <div class="product-cell">
+
+            <span
+              class="stock-badge"
+              [class.stock-badge--low]="p.stockState === 'low_stock'"
+              [class.stock-badge--danger]="p.stockState === 'out_of_stock'"
+            >
+              <span></span>
+              {{ getStockLabel(p.stockState) }}
+            </span>
+
+          </div>
+
+
+          <div class="product-cell">
+
+            <span
+              class="status-badge"
+              [class.status-badge--active]="p.isActive"
+              [class.status-badge--inactive]="!p.isActive"
+            >
+              {{ p.isActive
+                ? lang.pick("نشط", "Active")
+                : lang.pick("غير نشط", "Inactive")
+              }}
+            </span>
+
+          </div>
+
+
+          <div class="product-actions">
+
+            <button
+              type="button"
+              class="action-btn action-btn--edit"
+              (click)="editProduct(p)"
+            >
+              {{ lang.pick("تعديل", "Edit") }}
+            </button>
+
+            <button
+              type="button"
+              class="action-btn"
+              (click)="toggleStatus(p)"
+            >
+              {{ p.isActive
+                ? lang.pick("تعطيل", "Deactivate")
+                : lang.pick("تفعيل", "Activate")
+              }}
+            </button>
+
+            <button
+              type="button"
+              class="action-btn action-btn--delete"
+              (click)="deleteProduct(p)"
+            >
+              {{ lang.pick("حذف", "Delete") }}
+            </button>
+
+          </div>
+
+        </article>
+
+      }
+
+    </section>
+
+  }
+
+</div>

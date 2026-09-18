@@ -1,0 +1,591 @@
+<div class="container admin-product-page">
+
+  <!-- Header -->
+  <header class="product-form-header">
+
+    <div>
+      <button
+        type="button"
+        class="back-button"
+        (click)="cancel()"
+      >
+        <span aria-hidden="true">←</span>
+        {{ lang.pick("العودة للمنتجات", "Back to products") }}
+      </button>
+
+      <p class="eyebrow">
+        {{ lang.pick("إدارة المنتجات", "Product Management") }}
+      </p>
+
+      <h1 class="text-h1">
+        {{
+          isEditMode
+            ? lang.pick("تعديل المنتج", "Edit Product")
+            : lang.pick("إضافة منتج جديد", "Add New Product")
+        }}
+      </h1>
+
+      <p class="header-description">
+        {{
+          isEditMode
+            ? lang.pick(
+                "حدّث بيانات المنتج ثم احفظ التغييرات.",
+                "Update the product information, then save your changes."
+              )
+            : lang.pick(
+                "أضف بيانات المنتج الأساسية ليظهر في المتجر.",
+                "Add the product information that will be displayed in the store."
+              )
+        }}
+      </p>
+    </div>
+
+  </header>
+
+  @if (loading) {
+
+    <div class="loading-card">
+      <div class="spinner"></div>
+
+      <p>
+        {{
+          lang.pick(
+            "جاري تحميل البيانات...",
+            "Loading data..."
+          )
+        }}
+      </p>
+    </div>
+
+  } @else {
+
+    <form
+      class="product-form"
+      [formGroup]="form"
+      (ngSubmit)="submit()"
+      novalidate
+    >
+
+      <!-- Basic Information -->
+      <section class="form-section">
+
+        <div class="section-heading">
+          <div>
+            <span class="section-number">01</span>
+
+            <h2>
+              {{
+                lang.pick(
+                  "المعلومات الأساسية",
+                  "Basic Information"
+                )
+              }}
+            </h2>
+          </div>
+
+          <p>
+            {{
+              lang.pick(
+                "الاسم والوصف",
+                "Name and description"
+              )
+            }}
+          </p>
+        </div>
+
+        <div class="form-grid">
+
+          <!-- Arabic Name -->
+          <div class="field">
+            <label for="nameAr">
+              {{ lang.pick("اسم المنتج بالعربية", "Arabic Product Name") }}
+              <span>*</span>
+            </label>
+
+            <input
+              id="nameAr"
+              type="text"
+              formControlName="nameAr"
+              dir="rtl"
+              [class.invalid]="isInvalid('nameAr')"
+              [placeholder]="lang.pick('مثال: واي بروتين', 'Example: Whey Protein')"
+            />
+
+            @if (isInvalid("nameAr")) {
+              <small>
+                {{ lang.pick("اسم المنتج مطلوب", "Product name is required") }}
+              </small>
+            }
+          </div>
+
+          <!-- English Name -->
+          <div class="field">
+            <label for="nameEn">
+              {{ lang.pick("اسم المنتج بالإنجليزية", "English Product Name") }}
+              <span>*</span>
+            </label>
+
+            <input
+              id="nameEn"
+              type="text"
+              formControlName="nameEn"
+              dir="ltr"
+              [class.invalid]="isInvalid('nameEn')"
+              placeholder="Example: Whey Protein"
+            />
+
+            @if (isInvalid("nameEn")) {
+              <small>
+                {{ lang.pick("اسم المنتج مطلوب", "Product name is required") }}
+              </small>
+            }
+          </div>
+
+          <!-- Arabic Short Description -->
+          <div class="field field--full">
+            <label for="shortDescriptionAr">
+              {{ lang.pick("الوصف المختصر بالعربية", "Arabic Short Description") }}
+            </label>
+
+            <textarea
+              id="shortDescriptionAr"
+              formControlName="shortDescriptionAr"
+              dir="rtl"
+              rows="3"
+              [placeholder]="
+                lang.pick(
+                  'اكتب وصفًا مختصرًا للمنتج...',
+                  'Write a short product description...'
+                )
+              "
+            ></textarea>
+          </div>
+
+          <!-- English Short Description -->
+          <div class="field field--full">
+            <label for="shortDescriptionEn">
+              {{ lang.pick("الوصف المختصر بالإنجليزية", "English Short Description") }}
+            </label>
+
+            <textarea
+              id="shortDescriptionEn"
+              formControlName="shortDescriptionEn"
+              dir="ltr"
+              rows="3"
+              placeholder="Write a short product description..."
+            ></textarea>
+          </div>
+
+          <!-- Arabic Description -->
+          <div class="field field--full">
+            <label for="descriptionAr">
+              {{ lang.pick("الوصف الكامل بالعربية", "Arabic Full Description") }}
+            </label>
+
+            <textarea
+              id="descriptionAr"
+              formControlName="descriptionAr"
+              dir="rtl"
+              rows="6"
+              [placeholder]="
+                lang.pick(
+                  'اكتب تفاصيل المنتج كاملة...',
+                  'Write the full product description...'
+                )
+              "
+            ></textarea>
+          </div>
+
+          <!-- English Description -->
+          <div class="field field--full">
+            <label for="descriptionEn">
+              {{ lang.pick("الوصف الكامل بالإنجليزية", "English Full Description") }}
+            </label>
+
+            <textarea
+              id="descriptionEn"
+              formControlName="descriptionEn"
+              dir="ltr"
+              rows="6"
+              placeholder="Write the full product description..."
+            ></textarea>
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- Classification -->
+      <section class="form-section">
+
+        <div class="section-heading">
+          <div>
+            <span class="section-number">02</span>
+
+            <h2>
+              {{
+                lang.pick(
+                  "التصنيف",
+                  "Classification"
+                )
+              }}
+            </h2>
+          </div>
+
+          <p>
+            {{
+              lang.pick(
+                "حدد نوع المنتج والعلامة التجارية",
+                "Choose product type and brand"
+              )
+            }}
+          </p>
+        </div>
+
+        <div class="form-grid">
+
+          <!-- Category -->
+          <div class="field">
+            <label for="category">
+              {{ lang.pick("التصنيف", "Category") }}
+              <span>*</span>
+            </label>
+
+            <select
+              id="category"
+              formControlName="category"
+              [class.invalid]="isInvalid('category')"
+            >
+              <option value="">
+                {{ lang.pick("اختر التصنيف", "Select category") }}
+              </option>
+
+              @for (category of categories; track category._id) {
+                <option [value]="category._id">
+                  {{ lang.pick(category.nameAr, category.nameEn) }}
+                </option>
+              }
+            </select>
+
+            @if (isInvalid("category")) {
+              <small>
+                {{ lang.pick("التصنيف مطلوب", "Category is required") }}
+              </small>
+            }
+          </div>
+
+          <!-- Brand -->
+          <div class="field">
+            <label for="brand">
+              {{ lang.pick("العلامة التجارية", "Brand") }}
+            </label>
+
+            <select
+              id="brand"
+              formControlName="brand"
+            >
+              <option value="">
+                {{ lang.pick("بدون علامة تجارية", "No brand") }}
+              </option>
+
+              @for (brand of brands; track brand._id) {
+                <option [value]="brand._id">
+                  {{ brand.name }}
+                </option>
+              }
+            </select>
+          </div>
+
+          <!-- Product Type -->
+          <div class="field">
+            <label for="productType">
+              {{ lang.pick("نوع المنتج", "Product Type") }}
+              <span>*</span>
+            </label>
+
+            <select
+              id="productType"
+              formControlName="productType"
+            >
+              @for (type of productTypes; track type) {
+                <option [value]="type">
+                  {{ getProductTypeLabel(type) }}
+                </option>
+              }
+            </select>
+          </div>
+
+          <!-- Tags -->
+          <div class="field">
+            <label for="tags">
+              {{ lang.pick("الوسوم", "Tags") }}
+            </label>
+
+            <input
+              id="tags"
+              type="text"
+              formControlName="tags"
+              placeholder="protein, whey, muscle"
+            />
+
+            <small>
+              {{
+                lang.pick(
+                  "افصل بين الوسوم باستخدام الفاصلة (,)",
+                  "Separate tags using commas (,)"
+                )
+              }}
+            </small>
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- Pricing -->
+      <section class="form-section">
+
+        <div class="section-heading">
+          <div>
+            <span class="section-number">03</span>
+
+            <h2>
+              {{
+                lang.pick(
+                  "السعر والخصم",
+                  "Pricing & Discount"
+                )
+              }}
+            </h2>
+          </div>
+
+          <p>
+            {{
+              lang.pick(
+                "حدد سعر المنتج والخصم",
+                "Set product price and discount"
+              )
+            }}
+          </p>
+        </div>
+
+        <div class="form-grid">
+
+          <!-- Base Price -->
+          <div class="field">
+            <label for="basePrice">
+              {{ lang.pick("السعر الأساسي", "Base Price") }}
+              <span>*</span>
+            </label>
+
+            <div class="input-with-suffix">
+              <input
+                id="basePrice"
+                type="number"
+                min="0"
+                step="0.01"
+                formControlName="basePrice"
+                [class.invalid]="isInvalid('basePrice')"
+                placeholder="0"
+              />
+
+              <span>EGP</span>
+            </div>
+
+            @if (isInvalid("basePrice")) {
+              <small>
+                {{ lang.pick("السعر مطلوب", "Price is required") }}
+              </small>
+            }
+          </div>
+
+          <!-- Compare Price -->
+          <div class="field">
+            <label for="compareAtPrice">
+              {{ lang.pick("السعر قبل الخصم", "Compare At Price") }}
+            </label>
+
+            <div class="input-with-suffix">
+              <input
+                id="compareAtPrice"
+                type="number"
+                min="0"
+                step="0.01"
+                formControlName="compareAtPrice"
+                placeholder="0"
+              />
+
+              <span>EGP</span>
+            </div>
+          </div>
+
+          <!-- Discount Type -->
+          <div class="field">
+            <label for="discountType">
+              {{ lang.pick("نوع الخصم", "Discount Type") }}
+            </label>
+
+            <select
+              id="discountType"
+              formControlName="discountType"
+            >
+              @for (type of discountTypes; track type) {
+                <option [value]="type">
+                  {{ getDiscountTypeLabel(type) }}
+                </option>
+              }
+            </select>
+          </div>
+
+          <!-- Discount Value -->
+          <div class="field">
+            <label for="discountValue">
+              {{ lang.pick("قيمة الخصم", "Discount Value") }}
+            </label>
+
+            <div class="input-with-suffix">
+              <input
+                id="discountValue"
+                type="number"
+                min="0"
+                step="0.01"
+                formControlName="discountValue"
+                [disabled]="!isDiscounted"
+                placeholder="0"
+              />
+
+              <span>
+                {{ form.get("discountType")?.value === "percentage" ? "%" : "EGP" }}
+              </span>
+            </div>
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- Store Settings -->
+      <section class="form-section">
+
+        <div class="section-heading">
+          <div>
+            <span class="section-number">04</span>
+
+            <h2>
+              {{
+                lang.pick(
+                  "إعدادات المتجر",
+                  "Store Settings"
+                )
+              }}
+            </h2>
+          </div>
+
+          <p>
+            {{
+              lang.pick(
+                "حدد طريقة ظهور المنتج",
+                "Control product visibility"
+              )
+            }}
+          </p>
+        </div>
+
+        <div class="settings-grid">
+
+          <label class="toggle-card">
+            <input
+              type="checkbox"
+              formControlName="isFeatured"
+            />
+
+            <span class="toggle-ui"></span>
+
+            <span class="toggle-content">
+              <strong>
+                {{ lang.pick("منتج مميز", "Featured Product") }}
+              </strong>
+
+              <small>
+                {{
+                  lang.pick(
+                    "إظهار المنتج ضمن المنتجات المميزة",
+                    "Show this product in featured products"
+                  )
+                }}
+              </small>
+            </span>
+          </label>
+
+
+          <label class="toggle-card">
+            <input
+              type="checkbox"
+              formControlName="isBestSeller"
+            />
+
+            <span class="toggle-ui"></span>
+
+            <span class="toggle-content">
+              <strong>
+                {{ lang.pick("الأكثر مبيعًا", "Best Seller") }}
+              </strong>
+
+              <small>
+                {{
+                  lang.pick(
+                    "تمييز المنتج كأحد المنتجات الأكثر مبيعًا",
+                    "Mark this product as a best seller"
+                  )
+                }}
+              </small>
+            </span>
+          </label>
+
+        </div>
+
+      </section>
+
+
+      <!-- Actions -->
+      <div class="form-actions">
+
+        <button
+          type="button"
+          class="btn btn-outline"
+          [disabled]="saving"
+          (click)="cancel()"
+        >
+          {{ lang.pick("إلغاء", "Cancel") }}
+        </button>
+
+        <button
+          type="submit"
+          class="btn btn-primary"
+          [disabled]="saving"
+        >
+          @if (saving) {
+            <span class="button-spinner"></span>
+
+            {{ lang.pick("جاري الحفظ...", "Saving...") }}
+          } @else {
+            <span>{{ isEditMode ? "✓" : "+" }}</span>
+
+            {{
+              isEditMode
+                ? lang.pick("حفظ التغييرات", "Save Changes")
+                : lang.pick("إضافة المنتج", "Create Product")
+            }}
+          }
+        </button>
+
+      </div>
+
+    </form>
+
+  }
+
+</div>

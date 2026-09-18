@@ -1,0 +1,155 @@
+.auth-page { min-height: 70vh; display: flex; align-items: center; justify-content: center; padding: var(--space-lg) var(--container-pad); }
+.auth-card { width: 100%; max-width: 420px; background: var(--color-surface-raised); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: var(--space-lg); box-shadow: var(--shadow-card); }
+.auth-card h1 { margin-block-end: var(--space-md); }
+
+.auth-error { background: color-mix(in srgb, var(--color-danger) 12%, transparent); color: var(--color-danger); padding: 0.7rem 0.9rem; border-radius: var(--radius-sm); margin-block-end: var(--space-sm); font-size: 0.875rem; }
+
+.field { display: flex; flex-direction: column; gap: var(--space-3xs); margin-block-end: var(--space-sm); }
+.field input {
+  padding: 0.75rem 0.9rem; border-radius: var(--radius-md);
+  border: 1px solid var(--color-border); background: var(--color-surface);
+  transition: border-color var(--dur-fast);
+}
+.field input:focus { border-color: var(--color-volt); }
+.field__error { font-size: var(--fs-meta); color: var(--color-danger); }
+
+.auth-submit { width: 100%; margin-block-start: var(--space-2xs); }
+.auth-switch { text-align: center; margin-block-start: var(--space-md); }
+.auth-switch a { font-weight: 600; text-decoration: underline; }
+.password-rules {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-top: 0.5rem;
+  font-size: 0.8rem;
+
+  >div {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    color: var(--color-danger);
+    transition:
+      color var(--dur-fast),
+      transform var(--dur-fast);
+
+    &.valid {
+      color: #22c55e;
+    }
+  }
+}
+
+.rule-icon {
+  width: 18px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.password-input {
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  input {
+    width: 100%;
+    padding-inline-end: 3rem;
+  }
+}
+
+.password-toggle {
+  position: absolute;
+  inset-inline-end: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+
+  font-size: 1.1rem;
+  line-height: 1;
+  padding: 0.25rem;
+
+  opacity: 0.7;
+  transition: opacity var(--dur-fast);
+
+  &:hover {
+    opacity: 1;
+  }
+}
+
+.password-rules {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-top: 0.5rem;
+  font-size: 0.8rem;
+
+  >div {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    color: var(--color-danger);
+    transition: color var(--dur-fast);
+
+    &.valid {
+      color: #22c55e;
+    }
+  }
+}
+
+.rule-icon {
+  width: 18px;
+  height: 18px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.field__error {
+  font-size: var(--fs-meta);
+  color: var(--color-danger);
+}
+.password-toggle {
+  position: absolute;
+  inset-inline-end: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+
+  width: 2rem;
+  height: 2rem;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+  border: 0;
+  background: transparent;
+
+  color: var(--color-text-muted);
+  cursor: pointer;
+
+  transition:
+    color var(--dur-fast),
+    opacity var(--dur-fast);
+
+  &:hover {
+    color: var(--color-volt);
+  }
+
+  lucide-icon {
+    display: flex;
+  }
+
+  svg {
+    width: 19px;
+    height: 19px;
+  }
+}

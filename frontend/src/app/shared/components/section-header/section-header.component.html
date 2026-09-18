@@ -1,0 +1,6 @@
+<div class="section-header">
+  <h2 class="text-h2">{{ title }}</h2>
+  @if (seeAllLink) {
+    <a class="section-header__link" [routerLink]="seeAllLink">{{ 'common.seeAll' | t }}</a>
+  }
+</div>

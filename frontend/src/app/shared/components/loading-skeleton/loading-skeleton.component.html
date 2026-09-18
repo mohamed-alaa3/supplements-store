@@ -1,0 +1,18 @@
+@if (variant === 'card') {
+  <div class="skeleton-grid" role="status" aria-label="Loading">
+    @for (i of items; track i) {
+      <div class="skeleton-card">
+        <div class="skeleton shimmer skeleton-card__image"></div>
+        <div class="skeleton shimmer skeleton-card__line" style="width: 70%"></div>
+        <div class="skeleton shimmer skeleton-card__line" style="width: 40%"></div>
+      </div>
+    }
+  </div>
+} @else {
+  @for (i of items; track i) {
+    <div class="skeleton shimmer" [class.skeleton--circle]="variant === 'circle'"
+      [style.width]="width || (variant === 'circle' ? '40px' : '100%')"
+      [style.height]="height || (variant === 'circle' ? '40px' : (variant === 'block' ? '160px' : '14px'))"
+      role="status" aria-label="Loading"></div>
+  }
+}

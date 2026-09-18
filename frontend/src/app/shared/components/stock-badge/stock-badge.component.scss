@@ -1,0 +1,8 @@
+.stock-badge {
+  display: inline-flex; align-items: center; gap: var(--space-3xs);
+  font-size: var(--fs-meta); font-weight: 600;
+}
+.stock-badge__dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.stock-badge--in_stock { color: var(--color-success); }
+.stock-badge--low_stock { color: var(--color-warning); }
+.stock-badge--out_of_stock { color: var(--color-danger); }

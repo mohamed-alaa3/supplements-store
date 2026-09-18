@@ -1,0 +1,41 @@
+<div class="auth-page">
+  <div #card class="auth-card">
+    <h1 class="text-h1">{{ 'auth.loginTitle' | t }}</h1>
+
+    @if (formError()) {
+      <div class="auth-error" role="alert">{{ formError() }}</div>
+    }
+
+    <form #loginForm="ngForm" (submit)="$event.preventDefault(); submit(loginForm)" novalidate>
+      <label class="field">
+        <span class="text-label">{{ 'auth.email' | t }}</span>
+        <input type="email" name="email" required email [(ngModel)]="email" #emailField="ngModel" autocomplete="email" />
+        @if (emailField.invalid && emailField.touched) {
+          <span class="field__error">{{ 'auth.email' | t }}</span>
+        }
+      </label>
+
+      <label class="field">
+        <span class="text-label">{{ 'auth.password' | t }}</span>
+        <input type="password" name="password" required minlength="8" [(ngModel)]="password" #passwordField="ngModel" autocomplete="current-password" />
+      </label>
+
+      <button type="submit" class="btn btn-primary auth-submit" [disabled]="submitting()">
+        {{ submitting() ? ('common.loading' | t) : ('auth.loginCta' | t) }}
+      </button>
+    </form>
+
+    <p class="auth-switch text-muted">
+      {{ 'auth.noAccount' | t }}
+      <a routerLink="/register">{{ 'auth.signUp' | t }}</a>
+    </p>
+  </div>
+
+  @if (showVerificationModal()) {
+    <app-email-verification-modal
+      [email]="email"
+      (verified)="onVerified()"
+      (closed)="onVerificationClosed()"
+    />
+  }
+</div>

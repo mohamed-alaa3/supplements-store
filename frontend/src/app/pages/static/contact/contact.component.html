@@ -1,0 +1,26 @@
+<div class="container static-page">
+  <h1 class="text-h1" appReveal>{{ 'nav.contact' | t }}</h1>
+
+  @if (submitted()) {
+    <div class="contact-success" appReveal>
+      <p class="text-h3">{{ lang.lang() === 'ar' ? 'شكرًا لك!' : 'Thank you!' }}</p>
+      <p class="text-muted">{{ lang.lang() === 'ar' ? 'تم استلام رسالتك بنجاح.' : 'Your message has been received.' }}</p>
+    </div>
+  } @else {
+    <form #contactForm="ngForm" class="contact-form" appReveal [revealDelay]="0.1" (submit)="$event.preventDefault(); submit(contactForm)" novalidate>
+      <label class="field">
+        <span class="text-label">{{ 'auth.fullName' | t }}</span>
+        <input type="text" name="name" required [(ngModel)]="name" />
+      </label>
+      <label class="field">
+        <span class="text-label">{{ 'auth.email' | t }}</span>
+        <input type="email" name="email" required email [(ngModel)]="email" />
+      </label>
+      <label class="field">
+        <span class="text-label">{{ lang.lang() === 'ar' ? 'رسالتك' : 'Message' }}</span>
+        <textarea rows="5" name="message" required [(ngModel)]="message"></textarea>
+      </label>
+      <button type="submit" class="btn btn-primary">{{ lang.lang() === 'ar' ? 'إرسال' : 'Send' }}</button>
+    </form>
+  }
+</div>

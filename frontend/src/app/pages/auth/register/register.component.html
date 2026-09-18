@@ -1,0 +1,185 @@
+<div class="auth-page">
+  <div #card class="auth-card">
+    <h1 class="text-h1">{{ "auth.registerTitle" | t }}</h1>
+
+    @if (formError()) {
+      <div class="auth-error" role="alert">{{ formError() }}</div>
+    }
+
+    <form
+      #registerForm="ngForm"
+      (submit)="$event.preventDefault(); submit(registerForm)"
+      novalidate
+    >
+      <label class="field">
+        <span class="text-label">{{ "auth.fullName" | t }}</span>
+        <input
+          type="text"
+          name="fullName"
+          required
+          [(ngModel)]="fullName"
+          autocomplete="name"
+        />
+      </label>
+
+      <label class="field">
+        <span class="text-label">{{ "auth.email" | t }}</span>
+        <input
+          type="email"
+          name="email"
+          required
+          email
+          [(ngModel)]="email"
+          autocomplete="email"
+        />
+      </label>
+
+      <label class="field">
+        <span class="text-label">{{ "auth.phone" | t }}</span>
+        <input type="tel" name="phone" [(ngModel)]="phone" autocomplete="tel" />
+      </label>
+
+      <label class="field">
+        <span class="text-label">{{ "auth.password" | t }}</span>
+
+        <div class="password-input">
+          <input
+            [type]="showPassword ? 'text' : 'password'"
+            name="password"
+            required
+            minlength="8"
+            [(ngModel)]="password"
+            autocomplete="new-password"
+          />
+
+<button
+  type="button"
+  class="password-toggle"
+  (click)="togglePasswordVisibility()"
+  [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'"
+>
+  @if (showPassword) {
+    <lucide-icon [img]="EyeOff"></lucide-icon>
+  } @else {
+    <lucide-icon [img]="Eye"></lucide-icon>
+  }
+</button>
+        </div>
+
+        @if (password.length > 0) {
+          <div class="password-rules">
+            <div [class.valid]="hasMinLength()">
+              <span class="rule-icon">
+                {{ hasMinLength() ? "✓" : "✕" }}
+              </span>
+              <span>
+                {{
+                  lang.lang() === "ar"
+                    ? "8 أحرف على الأقل"
+                    : "At least 8 characters"
+                }}
+              </span>
+            </div>
+
+            <div [class.valid]="hasLetter()">
+              <span class="rule-icon">
+                {{ hasLetter() ? "✓" : "✕" }}
+              </span>
+              <span>
+                {{
+                  lang.lang() === "ar"
+                    ? "حرف واحد على الأقل"
+                    : "At least one letter"
+                }}
+              </span>
+            </div>
+
+            <div [class.valid]="hasNumber()">
+              <span class="rule-icon">
+                {{ hasNumber() ? "✓" : "✕" }}
+              </span>
+              <span>
+                {{
+                  lang.lang() === "ar"
+                    ? "رقم واحد على الأقل"
+                    : "At least one number"
+                }}
+              </span>
+            </div>
+
+            <div [class.valid]="hasSpecialChar()">
+              <span class="rule-icon">
+                {{ hasSpecialChar() ? "✓" : "✕" }}
+              </span>
+              <span>
+                {{
+                  lang.lang() === "ar"
+                    ? "رمز خاص مثل @ # !"
+                    : "One special character like @ # !"
+                }}
+              </span>
+            </div>
+          </div>
+        }
+      </label>
+      <label class="field">
+        <span class="text-label">{{ "auth.confirmPassword" | t }}</span>
+
+        <div class="password-input">
+          <input
+            [type]="showConfirmPassword ? 'text' : 'password'"
+            name="confirmPassword"
+            required
+            minlength="8"
+            [(ngModel)]="confirmPassword"
+            autocomplete="new-password"
+          />
+
+<button
+  type="button"
+  class="password-toggle"
+  (click)="toggleConfirmPasswordVisibility()"
+  [attr.aria-label]="showConfirmPassword ? 'Hide password' : 'Show password'"
+>
+  @if (showConfirmPassword) {
+    <lucide-icon [img]="EyeOff"></lucide-icon>
+  } @else {
+    <lucide-icon [img]="Eye"></lucide-icon>
+  }
+</button>
+        </div>
+
+        @if (confirmPassword && password !== confirmPassword) {
+          <div class="field__error">
+            {{
+              lang.lang() === "ar"
+                ? "كلمتا المرور غير متطابقتين"
+                : "Passwords do not match"
+            }}
+          </div>
+        }
+      </label>
+
+      <button
+        type="submit"
+        class="btn btn-primary auth-submit"
+        [disabled]="submitting()"
+      >
+        {{ submitting() ? ("common.loading" | t) : ("auth.registerCta" | t) }}
+      </button>
+    </form>
+
+    <p class="auth-switch text-muted">
+      {{ "auth.haveAccount" | t }}
+      <a routerLink="/login">{{ "auth.signIn" | t }}</a>
+    </p>
+  </div>
+</div>
+
+@if (showVerificationModal()) {
+  <app-email-verification-modal
+    [email]="registeredEmail()"
+    (verified)="onVerified()"
+    (closed)="onVerificationClosed()"
+  />
+}

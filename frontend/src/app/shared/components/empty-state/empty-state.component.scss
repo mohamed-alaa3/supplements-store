@@ -1,0 +1,16 @@
+.empty-state {
+  display: flex; flex-direction: column; align-items: center; text-align: center;
+  gap: var(--space-xs);
+  padding: var(--space-xl) var(--space-md);
+  color: var(--color-on-surface);
+}
+.empty-state__icon {
+  width: 56px; height: 56px;
+  display: grid; place-items: center;
+  border-radius: 50%;
+  background: var(--color-surface-sunken);
+  color: var(--color-on-surface-muted);
+}
+.empty-state--error .empty-state__icon { color: var(--color-danger); }
+.empty-state__body { max-width: 42ch; }
+.empty-state__actions { margin-block-start: var(--space-2xs); }

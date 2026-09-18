@@ -1,0 +1,106 @@
+<div class="container checkout-page">
+  <h1 class="text-h1">{{ 'checkout.title' | t }}</h1>
+
+  @switch (state()) {
+    @case ('loading') {
+      <div class="checkout-page__grid">
+        <app-loading-skeleton variant="block" height="280px"></app-loading-skeleton>
+        <app-loading-skeleton variant="block" height="220px"></app-loading-skeleton>
+      </div>
+    }
+    @case ('error') {
+      <app-empty-state kind="error" [title]="'common.errorTitle' | t" [body]="'common.errorBody' | t"></app-empty-state>
+    }
+    @case ('success') {
+      @if ((cart.cart()?.items?.length ?? 0) === 0) {
+        <app-empty-state [title]="'cart.empty' | t" [body]="'cart.emptyBody' | t">
+          <a routerLink="/shop" class="btn btn-primary">{{ 'nav.shop' | t }}</a>
+        </app-empty-state>
+      } @else {
+        <div class="checkout-page__grid">
+          <div class="checkout-main">
+            <!-- Shipping address -->
+            <section class="checkout-section">
+              <h2 class="text-h3">{{ 'checkout.shippingAddress' | t }}</h2>
+
+              @if (addresses().length > 0) {
+                <div class="address-list">
+                  @for (address of addresses(); track address._id) {
+                    <label class="address-option" [class.is-selected]="selectedAddressId() === address._id">
+                      <input type="radio" name="address" [checked]="selectedAddressId() === address._id" (change)="selectAddress(address._id)" />
+                      <div>
+                        <p class="address-option__name">{{ address.firstName }} {{ address.lastName }} · <span class="ltr-token">{{ address.phone }}</span></p>
+                        <p class="text-muted">{{ address.street }}, {{ address.area }}, {{ address.city }}</p>
+                      </div>
+                    </label>
+                  }
+                </div>
+                <button type="button" class="btn btn-ghost" (click)="showNewAddressForm.set(!showNewAddressForm())">
+                  + {{ lang.lang() === 'ar' ? 'عنوان جديد' : 'Add a new address' }}
+                </button>
+              }
+
+              @if (showNewAddressForm() || addresses().length === 0) {
+                <form #addressForm="ngForm" class="address-form" (submit)="$event.preventDefault(); saveNewAddress(addressForm)" novalidate>
+                  <div class="address-form__row">
+                    <input type="text" name="firstName" required [(ngModel)]="newAddress.firstName" placeholder="First name" />
+                    <input type="text" name="lastName" required [(ngModel)]="newAddress.lastName" placeholder="Last name" />
+                  </div>
+                  <input type="tel" name="phone" required [(ngModel)]="newAddress.phone" placeholder="Phone" />
+                  <div class="address-form__row">
+                    <input type="text" name="city" required [(ngModel)]="newAddress.city" placeholder="City" />
+                    <input type="text" name="area" required [(ngModel)]="newAddress.area" placeholder="Area" />
+                  </div>
+                  <input type="text" name="street" required [(ngModel)]="newAddress.street" placeholder="Street" />
+                  <div class="address-form__row">
+                    <input type="text" name="building" [(ngModel)]="newAddress.building" placeholder="Building" />
+                    <input type="text" name="floor" [(ngModel)]="newAddress.floor" placeholder="Floor" />
+                    <input type="text" name="apartment" [(ngModel)]="newAddress.apartment" placeholder="Apartment" />
+                  </div>
+                  <button type="submit" class="btn btn-outline">{{ 'common.save' | t }}</button>
+                </form>
+              }
+            </section>
+
+            <!-- Payment -->
+            <section class="checkout-section">
+              <h2 class="text-h3">{{ 'checkout.payment' | t }}</h2>
+              <label class="payment-option is-selected">
+                <input type="radio" checked disabled />
+                <span>{{ 'checkout.cod' | t }}</span>
+              </label>
+            </section>
+          </div>
+
+          <!-- Order summary -->
+          <aside class="checkout-summary">
+            <h2 class="text-h3">{{ 'checkout.reviewOrder' | t }}</h2>
+            <ul class="checkout-summary__items">
+              @for (item of cart.cart()?.items; track item._id) {
+                <li>
+                  <span>{{ lang.pick(item.productNameAr, item.productNameEn) }} × {{ item.quantity }}</span>
+                  <span class="ltr-token">{{ item.lineTotal | number: '1.0-0' }} EGP</span>
+                </li>
+              }
+            </ul>
+            <div class="checkout-summary__row">
+              <span>{{ 'common.subtotal' | t }}</span>
+              <span class="ltr-token">{{ cart.cart()?.subtotal | number: '1.0-0' }} EGP</span>
+            </div>
+            @if ((cart.cart()?.discountTotal ?? 0) > 0) {
+              <div class="checkout-summary__row">
+                <span>{{ 'common.discount' | t }}</span>
+                <span class="ltr-token">-{{ cart.cart()?.discountTotal | number: '1.0-0' }} EGP</span>
+              </div>
+            }
+            <p class="text-meta text-muted">{{ lang.lang() === 'ar' ? 'الشحن والإجمالي النهائي يُحتسبان عند تأكيد الطلب.' : 'Shipping and the final total are calculated by the server when you place the order.' }}</p>
+
+            <button type="button" class="btn btn-primary checkout-summary__submit" [disabled]="placingOrder()" (click)="placeOrder()">
+              {{ placingOrder() ? ('checkout.processing' | t) : ('checkout.placeOrder' | t) }}
+            </button>
+          </aside>
+        </div>
+      }
+    }
+  }
+</div>

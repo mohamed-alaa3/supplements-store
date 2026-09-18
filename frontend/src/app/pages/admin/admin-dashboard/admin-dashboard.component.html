@@ -1,0 +1,629 @@
+<div class="container admin-page">
+
+  <!-- Header -->
+  <header class="admin-page__header">
+    <div>
+      <p class="admin-page__eyebrow">
+        {{ "admin.overview" | t }}
+      </p>
+
+      <h1 class="text-h1">
+        {{ "nav.adminDashboard" | t }}
+      </h1>
+    </div>
+  </header>
+
+  <div class="admin-layout">
+
+    <!-- Management Sidebar -->
+    <aside class="management-sidebar">
+
+      <div class="management-sidebar__header">
+        <div class="management-sidebar__icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              d="M4 5h16M4 12h16M4 19h16"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+            />
+          </svg>
+        </div>
+
+        <div>
+          <span class="management-sidebar__eyebrow">
+            {{ "admin.management" | t }}
+          </span>
+
+          <h2>
+            {{ "admin.quickActions" | t }}
+          </h2>
+        </div>
+      </div>
+
+      <nav
+        class="management-nav"
+        [attr.aria-label]="'admin.management' | t"
+      >
+
+        <!-- Products -->
+        <a
+          routerLink="/admin/products"
+          class="management-item"
+        >
+          <span class="management-item__icon">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                d="m4 7 8-4 8 4-8 4-8-4Z
+                   M4 7v10l8 4 8-4V7
+                   M12 11v10"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </span>
+
+          <span class="management-item__content">
+            <strong>
+              {{ "admin.products" | t }}
+            </strong>
+
+            <small>
+              {{ "admin.productsDescription" | t }}
+            </small>
+          </span>
+
+          <span
+            class="management-item__arrow"
+            aria-hidden="true"
+          >
+            →
+          </span>
+        </a>
+
+
+        <!-- Orders -->
+        <a
+          routerLink="/admin/orders"
+          class="management-item"
+        >
+          <span class="management-item__icon">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                d="M6 3h12v18H6z
+                   M9 7h6
+                   M9 11h6
+                   M9 15h4"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </span>
+
+          <span class="management-item__content">
+            <strong>
+              {{ "admin.orders" | t }}
+            </strong>
+
+            <small>
+              {{ "admin.ordersDescription" | t }}
+            </small>
+          </span>
+
+          <span
+            class="management-item__arrow"
+            aria-hidden="true"
+          >
+            →
+          </span>
+        </a>
+
+
+        <!-- Categories -->
+        <a
+          routerLink="/admin/categories"
+          class="management-item"
+        >
+          <span class="management-item__icon">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <rect
+                x="4"
+                y="4"
+                width="6"
+                height="6"
+                rx="1"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+              />
+
+              <rect
+                x="14"
+                y="4"
+                width="6"
+                height="6"
+                rx="1"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+              />
+
+              <rect
+                x="4"
+                y="14"
+                width="6"
+                height="6"
+                rx="1"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+              />
+
+              <rect
+                x="14"
+                y="14"
+                width="6"
+                height="6"
+                rx="1"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+              />
+            </svg>
+          </span>
+
+          <span class="management-item__content">
+            <strong>
+              {{ "admin.categories" | t }}
+            </strong>
+
+            <small>
+              {{ "admin.categoriesDescription" | t }}
+            </small>
+          </span>
+
+          <span
+            class="management-item__arrow"
+            aria-hidden="true"
+          >
+            →
+          </span>
+        </a>
+
+
+        <!-- Customers -->
+        <a
+          routerLink="/admin/customers"
+          class="management-item"
+        >
+          <span class="management-item__icon">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <circle
+                cx="12"
+                cy="8"
+                r="3"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+              />
+
+              <path
+                d="M5 20c.8-3.5 3.1-5 7-5s6.2 1.5 7 5"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+              />
+            </svg>
+          </span>
+
+          <span class="management-item__content">
+            <strong>
+              {{ "admin.customers" | t }}
+            </strong>
+
+            <small>
+              {{ "admin.customersDescription" | t }}
+            </small>
+          </span>
+
+          <span
+            class="management-item__arrow"
+            aria-hidden="true"
+          >
+            →
+          </span>
+        </a>
+
+      </nav>
+    </aside>
+
+
+    <!-- Main Dashboard -->
+    <main class="dashboard-main">
+
+      @if (loading()) {
+
+        <section
+          class="stat-grid"
+          [attr.aria-label]="'admin.statistics' | t"
+        >
+
+          @for (item of [1,2,3,4,5,6]; track item) {
+
+            <app-loading-skeleton
+              variant="block"
+              height="150px"
+              [count]="1">
+            </app-loading-skeleton>
+
+          }
+
+        </section>
+
+
+      } @else if (error()) {
+
+        <section
+          class="admin-error"
+          role="alert"
+        >
+
+          <div
+            class="admin-error__icon"
+            aria-hidden="true"
+          >
+            !
+          </div>
+
+          <div class="admin-error__content">
+
+            <h2>
+              {{ "admin.loadErrorTitle" | t }}
+            </h2>
+
+            <p class="text-muted">
+              {{ "admin.loadErrorBody" | t }}
+            </p>
+
+          </div>
+
+          <button
+            type="button"
+            class="btn btn-outline"
+            (click)="retry()"
+          >
+            {{ "common.retry" | t }}
+          </button>
+
+        </section>
+
+
+      } @else if (overview()) {
+
+        <section
+          class="stat-grid"
+          [attr.aria-label]="'admin.statistics' | t"
+        >
+
+          <!-- Products -->
+          <article class="stat-card stat-card--products">
+
+            <div class="stat-card__top">
+
+              <span
+                class="stat-card__icon"
+                aria-hidden="true"
+              >
+                <svg viewBox="0 0 24 24">
+                  <path
+                    d="m4 7 8-4 8 4-8 4-8-4Z
+                       M4 7v10l8 4 8-4V7"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </span>
+
+              <span
+                class="stat-card__pulse"
+                aria-hidden="true"
+              ></span>
+
+            </div>
+
+            <div>
+
+              <span class="stat-card__value">
+                {{ overview()!.productsCount }}
+              </span>
+
+              <span class="stat-card__label">
+                {{ "admin.products" | t }}
+              </span>
+
+            </div>
+
+          </article>
+
+
+          <!-- Users -->
+          <article class="stat-card stat-card--users">
+
+            <div class="stat-card__top">
+
+              <span
+                class="stat-card__icon"
+                aria-hidden="true"
+              >
+                <svg viewBox="0 0 24 24">
+
+                  <circle
+                    cx="9"
+                    cy="8"
+                    r="3"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                  />
+
+                  <path
+                    d="M3 20c.7-3.4 2.7-5 6-5s5.3 1.6 6 5"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                  />
+
+                  <path
+                    d="M16 6.5a3 3 0 0 1 0 5.8
+                       M18 15c1.8.6 2.8 2 3 4"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                  />
+
+                </svg>
+              </span>
+
+            </div>
+
+            <div>
+
+              <span class="stat-card__value">
+                {{ overview()!.usersCount }}
+              </span>
+
+              <span class="stat-card__label">
+                {{ "admin.users" | t }}
+              </span>
+
+            </div>
+
+          </article>
+
+
+          <!-- Sellers -->
+          <article class="stat-card stat-card--sellers">
+
+            <div class="stat-card__top">
+
+              <span
+                class="stat-card__icon"
+                aria-hidden="true"
+              >
+                <svg viewBox="0 0 24 24">
+
+                  <path
+                    d="M4 10h16
+                       M5 10v9h14v-9
+                       M3 10l2-6h14l2 6
+                       M8 10v2
+                       M12 10v2
+                       M16 10v2"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+
+                </svg>
+              </span>
+
+            </div>
+
+            <div>
+
+              <span class="stat-card__value">
+                {{ overview()!.sellersCount }}
+              </span>
+
+              <span class="stat-card__label">
+                {{ "admin.activeSellers" | t }}
+              </span>
+
+            </div>
+
+          </article>
+
+
+          <!-- Orders -->
+          <article class="stat-card stat-card--orders">
+
+            <div class="stat-card__top">
+
+              <span
+                class="stat-card__icon"
+                aria-hidden="true"
+              >
+                <svg viewBox="0 0 24 24">
+
+                  <path
+                    d="M6 3h12v18H6z
+                       M9 7h6
+                       M9 11h6
+                       M9 15h4"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+
+                </svg>
+              </span>
+
+            </div>
+
+            <div>
+
+              <span class="stat-card__value">
+                {{ overview()!.ordersCount }}
+              </span>
+
+              <span class="stat-card__label">
+                {{ "admin.orders" | t }}
+              </span>
+
+            </div>
+
+          </article>
+
+
+          <!-- Reviews -->
+          <article
+            class="stat-card stat-card--attention"
+            [class.has-alert]="overview()!.pendingReviewsCount > 0"
+          >
+
+            <div class="stat-card__top">
+
+              <span
+                class="stat-card__icon"
+                aria-hidden="true"
+              >
+                <svg viewBox="0 0 24 24">
+
+                  <path
+                    d="M4 5h16v11H8l-4 4V5Z"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    stroke-linejoin="round"
+                  />
+
+                  <path
+                    d="M8 9h8M8 12h5"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                  />
+
+                </svg>
+              </span>
+
+              @if (overview()!.pendingReviewsCount > 0) {
+
+                <span
+                  class="stat-card__notification"
+                  aria-hidden="true"
+                ></span>
+
+              }
+
+            </div>
+
+            <div>
+
+              <span class="stat-card__value">
+                {{ overview()!.pendingReviewsCount }}
+              </span>
+
+              <span class="stat-card__label">
+                {{ "admin.pendingReviews" | t }}
+              </span>
+
+            </div>
+
+          </article>
+
+
+          <!-- Low Stock -->
+          <article
+            class="stat-card stat-card--warning"
+            [class.has-alert]="overview()!.lowStockVariantsCount > 0"
+          >
+
+            <div class="stat-card__top">
+
+              <span
+                class="stat-card__icon"
+                aria-hidden="true"
+              >
+                <svg viewBox="0 0 24 24">
+
+                  <path
+                    d="M12 3 21 20H3L12 3Z"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    stroke-linejoin="round"
+                  />
+
+                  <path
+                    d="M12 9v5
+                       M12 17h.01"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                  />
+
+                </svg>
+              </span>
+
+              @if (overview()!.lowStockVariantsCount > 0) {
+
+                <span
+                  class="stat-card__notification"
+                  aria-hidden="true"
+                ></span>
+
+              }
+
+            </div>
+
+            <div>
+
+              <span class="stat-card__value">
+                {{ overview()!.lowStockVariantsCount }}
+              </span>
+
+              <span class="stat-card__label">
+                {{ "admin.lowStock" | t }}
+              </span>
+
+            </div>
+
+          </article>
+
+        </section>
+
+      }
+
+    </main>
+
+  </div>
+
+</div>

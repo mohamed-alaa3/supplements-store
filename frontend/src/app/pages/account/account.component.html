@@ -1,0 +1,87 @@
+<div class="container account-page">
+  <h1 class="text-h1">{{ 'nav.account' | t }}</h1>
+
+  <div class="account-tabs" role="tablist">
+    <button type="button" role="tab" [class.is-active]="activeTab() === 'profile'" (click)="setTab('profile')">{{ 'auth.fullName' | t }}</button>
+    <button type="button" role="tab" [class.is-active]="activeTab() === 'addresses'" (click)="setTab('addresses')">{{ 'checkout.shippingAddress' | t }}</button>
+    <button type="button" role="tab" [class.is-active]="activeTab() === 'password'" (click)="setTab('password')">{{ 'auth.password' | t }}</button>
+  </div>
+
+  @if (activeTab() === 'profile') {
+    <form #profileFormRef="ngForm" class="account-form" (submit)="$event.preventDefault(); saveProfile(profileFormRef)" novalidate>
+      <label class="field">
+        <span class="text-label">{{ 'auth.fullName' | t }}</span>
+        <input type="text" name="fullName" required [(ngModel)]="profileForm.fullName" />
+      </label>
+      <label class="field">
+        <span class="text-label">{{ 'auth.phone' | t }}</span>
+        <input type="tel" name="phone" [(ngModel)]="profileForm.phone" />
+      </label>
+      <label class="field">
+        <span class="text-label">{{ lang.lang() === 'ar' ? 'اللغة المفضلة' : 'Preferred language' }}</span>
+        <select name="preferredLanguage" [(ngModel)]="profileForm.preferredLanguage">
+          <option value="en">English</option>
+          <option value="ar">العربية</option>
+        </select>
+      </label>
+      <button type="submit" class="btn btn-primary" [disabled]="savingProfile()">{{ 'common.save' | t }}</button>
+    </form>
+  }
+
+  @if (activeTab() === 'addresses') {
+    <div class="account-addresses">
+      @if (!addressesLoaded()) {
+        <app-loading-skeleton variant="block" height="80px" [count]="2"></app-loading-skeleton>
+      } @else {
+        @for (address of addresses(); track address._id) {
+          <div class="address-card" [class.is-default]="address.isDefault">
+            <div>
+              <p class="address-card__name">{{ address.firstName }} {{ address.lastName }} @if (address.isDefault) { <span class="badge badge--volt">Default</span> }</p>
+              <p class="text-muted">{{ address.street }}, {{ address.area }}, {{ address.city }} — <span class="ltr-token">{{ address.phone }}</span></p>
+            </div>
+            <div class="address-card__actions">
+              @if (!address.isDefault) { <button type="button" class="btn btn-ghost btn-sm" (click)="setDefaultAddress(address._id)">Set default</button> }
+              <button type="button" class="btn btn-ghost btn-sm" (click)="deleteAddress(address._id)">{{ 'common.remove' | t }}</button>
+            </div>
+          </div>
+        }
+
+        @if (!showNewAddressForm()) {
+          <button type="button" class="btn btn-outline" (click)="showNewAddressForm.set(true)">+ {{ lang.lang() === 'ar' ? 'عنوان جديد' : 'Add address' }}</button>
+        } @else {
+          <form #addressFormRef="ngForm" class="account-form" (submit)="$event.preventDefault(); addAddress(addressFormRef)" novalidate>
+            <div class="account-form__row">
+              <input type="text" name="firstName" required [(ngModel)]="newAddress.firstName" placeholder="First name" />
+              <input type="text" name="lastName" required [(ngModel)]="newAddress.lastName" placeholder="Last name" />
+            </div>
+            <input type="tel" name="phone" required [(ngModel)]="newAddress.phone" placeholder="Phone" />
+            <div class="account-form__row">
+              <input type="text" name="city" required [(ngModel)]="newAddress.city" placeholder="City" />
+              <input type="text" name="area" required [(ngModel)]="newAddress.area" placeholder="Area" />
+            </div>
+            <input type="text" name="street" required [(ngModel)]="newAddress.street" placeholder="Street" />
+            <button type="submit" class="btn btn-primary" [disabled]="addingAddress()">{{ 'common.save' | t }}</button>
+          </form>
+        }
+      }
+    </div>
+  }
+
+  @if (activeTab() === 'password') {
+    <form #passwordFormRef="ngForm" class="account-form" (submit)="$event.preventDefault(); changePassword(passwordFormRef)" novalidate>
+      <label class="field">
+        <span class="text-label">{{ lang.lang() === 'ar' ? 'كلمة المرور الحالية' : 'Current password' }}</span>
+        <input type="password" name="currentPassword" required [(ngModel)]="passwordForm.currentPassword" />
+      </label>
+      <label class="field">
+        <span class="text-label">{{ lang.lang() === 'ar' ? 'كلمة المرور الجديدة' : 'New password' }}</span>
+        <input type="password" name="newPassword" required minlength="8" [(ngModel)]="passwordForm.newPassword" />
+      </label>
+      <label class="field">
+        <span class="text-label">{{ 'auth.confirmPassword' | t }}</span>
+        <input type="password" name="confirmPassword" required minlength="8" [(ngModel)]="passwordForm.confirmPassword" />
+      </label>
+      <button type="submit" class="btn btn-primary" [disabled]="savingPassword()">{{ 'common.save' | t }}</button>
+    </form>
+  }
+</div>
