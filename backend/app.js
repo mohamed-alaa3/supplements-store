@@ -35,7 +35,13 @@ app.use('/api', apiLimiter, apiRoutes);
 app.get('/', (req, res) => {
   res.json({ success: true, data: { name: 'Supplements Store API', docs: '/api/health' } });
 });
-
+app.get("/debug/cors", (req, res) => {
+  res.json({
+    clientUrl: env.clientUrl,
+    nodeEnv: env.nodeEnv,
+    origin: req.headers.origin || null,
+  });
+});
 app.use(notFound);
 app.use(errorHandler);
 
