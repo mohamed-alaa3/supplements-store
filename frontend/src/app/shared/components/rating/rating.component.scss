@@ -1,0 +1,4 @@
+.rating { display: inline-flex; align-items: center; gap: var(--space-3xs); }
+.rating__stars { display: inline-flex; gap: 2px; }
+.rating__count { font-size: var(--fs-meta); }
+.rating--md svg { width: 18px; height: 18px; }

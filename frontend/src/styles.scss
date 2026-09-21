@@ -1,0 +1,235 @@
+/* Swiper base styles — carousel/gallery components (home banners, product
+   gallery, bundle rails) all share these; component SCSS only overrides
+   the theming (arrows/dots/colors) via CSS variables below. */
+@import 'swiper/css';
+@import 'swiper/css/navigation';
+@import 'swiper/css/pagination';
+@import 'swiper/css/thumbs';
+@import 'swiper/css/free-mode';
+
+/* ==========================================================================
+   Design tokens — original visual identity, inspired by (not copied from)
+   the reference supplements storefront. Two named accents:
+     - Volt   : an electric chartreuse used for primary actions, prices,
+                in-stock signals, discount badges.
+     - Ember  : a warm amber-orange used sparingly for energy/urgency
+                (limited offers, low-stock, best-seller ribbon).
+   All components must consume these variables — never hard-code colors.
+   ========================================================================== */
+
+:root {
+  /* ---- Palette — light theme (default) -------------------------------- */
+  --color-ink: #15181b;           /* near-black warm charcoal, primary text on light */
+  --color-ink-soft: #4a5158;      /* secondary text on light */
+  --color-surface: #f6f3ed;       /* warm off-white page background */
+  --color-surface-raised: #ffffff;/* cards */
+  --color-surface-sunken: #ece7dd;/* inputs, skeletons */
+  --color-border: #e1dccf;
+  --color-border-strong: #c9c2ae;
+
+  --color-volt: #b7e619;          /* electric chartreuse accent */
+  --color-volt-ink: #1c2400;      /* text placed on top of volt */
+  --color-ember: #ff6a3d;         /* warm energy accent */
+  --color-ember-ink: #2a0d02;
+
+  --color-success: #1f9d55;
+  --color-danger: #e0402a;
+  --color-warning: #c87f0a;
+
+  --color-on-surface: var(--color-ink);
+  --color-on-surface-muted: var(--color-ink-soft);
+  --color-focus-ring: #1450ff;
+
+  /* ---- Typography ------------------------------------------------------ */
+  --font-latin: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-arabic: 'IBM Plex Sans Arabic', 'Manrope', sans-serif;
+  --font-mono: ui-monospace, 'SFMono-Regular', Menlo, monospace;
+
+  --fs-display: clamp(2.4rem, 1.7rem + 3vw, 4.4rem);
+  --fs-h1: clamp(1.9rem, 1.5rem + 1.6vw, 2.75rem);
+  --fs-h2: clamp(1.5rem, 1.25rem + 1vw, 2.05rem);
+  --fs-h3: clamp(1.2rem, 1.05rem + 0.6vw, 1.5rem);
+  --fs-body-lg: 1.125rem;
+  --fs-body: 1rem;
+  --fs-label: 0.8125rem;
+  --fs-meta: 0.75rem;
+  --fs-price: 1.25rem;
+
+  --lh-tight: 1.1;
+  --lh-heading: 1.25;
+  --lh-body: 1.6;
+
+  /* ---- Spacing (fluid) --------------------------------------------------*/
+  --space-3xs: 0.25rem;
+  --space-2xs: 0.5rem;
+  --space-xs: 0.75rem;
+  --space-sm: 1rem;
+  --space-md: clamp(1.25rem, 1rem + 1vw, 2rem);
+  --space-lg: clamp(2rem, 1.5rem + 2vw, 3.5rem);
+  --space-xl: clamp(3rem, 2rem + 4vw, 6rem);
+
+  /* ---- Layout ------------------------------------------------------------*/
+  --container-max: 1320px;
+  --container-pad: clamp(1rem, 0.6rem + 1.6vw, 2.5rem);
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 18px;
+  --radius-pill: 999px;
+
+  --shadow-card: 0 1px 2px rgba(21, 24, 27, 0.06), 0 8px 24px -12px rgba(21, 24, 27, 0.18);
+  --shadow-raised: 0 4px 10px rgba(21, 24, 27, 0.08), 0 20px 40px -20px rgba(21, 24, 27, 0.28);
+
+  --ease-standard: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-fast: 140ms;
+  --dur-base: 220ms;
+  --dur-slow: 420ms;
+
+  color-scheme: light;
+}
+
+/* ---- Dark theme — intentionally re-composed, not inverted -------------- */
+:root[data-theme='dark'] {
+  --color-ink: #f2f1ea;
+  --color-ink-soft: #b6b3a8;
+  --color-surface: #101214;
+  --color-surface-raised: #191c1f;
+  --color-surface-sunken: #1f2327;
+  --color-border: #2a2e32;
+  --color-border-strong: #3a3f44;
+
+  --color-volt: #d4ff5a;
+  --color-volt-ink: #1c2400;
+  --color-ember: #ff8158;
+  --color-ember-ink: #2a0d02;
+
+  --color-success: #3ecb78;
+  --color-danger: #ff5b45;
+  --color-warning: #f0a93c;
+
+  --color-on-surface: var(--color-ink);
+  --color-on-surface-muted: var(--color-ink-soft);
+  --color-focus-ring: #6fa8ff;
+
+  --shadow-card: 0 1px 0 rgba(0, 0, 0, 0.4), 0 12px 28px -14px rgba(0, 0, 0, 0.6);
+  --shadow-raised: 0 6px 16px rgba(0, 0, 0, 0.45), 0 28px 50px -22px rgba(0, 0, 0, 0.7);
+
+  color-scheme: dark;
+}
+
+/* ==========================================================================
+   Reset + base
+   ========================================================================== */
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+
+html, body { height: 100%; }
+
+body {
+  margin: 0;
+  background: var(--color-surface);
+  color: var(--color-on-surface);
+  font-family: var(--font-latin);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  transition: background-color var(--dur-base) var(--ease-standard), color var(--dur-base) var(--ease-standard);
+}
+
+html[dir='rtl'] body { font-family: var(--font-arabic); }
+
+img, picture, video, svg { display: block; max-width: 100%; }
+a { color: inherit; text-decoration: none; }
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+ul, ol { margin: 0; padding: 0; list-style: none; }
+h1, h2, h3, h4, p { margin: 0; }
+
+/* Keep LTR-shaped tokens (prices, SKUs, phone numbers, emails) readable inside RTL text */
+.ltr-token {
+  direction: ltr;
+  unicode-bidi: isolate;
+  display: inline-block;
+}
+
+/* Visible, accessible focus ring everywhere — never remove without replacing */
+:focus-visible {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+.container {
+  max-width: var(--container-max);
+  margin-inline: auto;
+  padding-inline: var(--container-pad);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ==========================================================================
+   Typography helpers
+   ========================================================================== */
+.text-display { font-size: var(--fs-display); line-height: var(--lh-tight); font-weight: 800; letter-spacing: -0.02em; }
+.text-h1 { font-size: var(--fs-h1); line-height: var(--lh-heading); font-weight: 700; letter-spacing: -0.01em; }
+.text-h2 { font-size: var(--fs-h2); line-height: var(--lh-heading); font-weight: 700; }
+.text-h3 { font-size: var(--fs-h3); line-height: var(--lh-heading); font-weight: 600; }
+.text-muted { color: var(--color-on-surface-muted); }
+.text-label { font-size: var(--fs-label); font-weight: 600; color: var(--color-on-surface-muted); }
+.text-meta { font-size: var(--fs-meta); }
+.text-price { font-size: var(--fs-price); font-weight: 700; font-variant-numeric: tabular-nums; }
+
+/* ==========================================================================
+   Buttons — shared primitives (component-level styles extend these)
+   ========================================================================== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2xs);
+  padding-block: 0.75rem;
+  padding-inline: 1.5rem;
+  border-radius: var(--radius-pill);
+  border: 1px solid transparent;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  transition: transform var(--dur-fast) var(--ease-standard), background-color var(--dur-fast) var(--ease-standard), border-color var(--dur-fast) var(--ease-standard);
+  white-space: nowrap;
+}
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn-primary {
+  background: var(--color-volt);
+  color: var(--color-volt-ink);
+}
+.btn-primary:hover:not(:disabled) { transform: translateY(-1px); }
+.btn-outline {
+  background: transparent;
+  border-color: var(--color-border-strong);
+  color: var(--color-on-surface);
+}
+.btn-outline:hover:not(:disabled) { border-color: var(--color-on-surface); }
+.btn-ghost {
+  background: transparent;
+  color: var(--color-on-surface);
+}
+.btn-ghost:hover:not(:disabled) { background: var(--color-surface-sunken); }
+.btn-sm { padding-block: 0.5rem; padding-inline: 1rem; font-size: 0.8125rem; }
+
+/* ==========================================================================
+   Reduced motion — global escape hatch. Individual GSAP timelines also
+   check this via ThemeService/AnimationService before running.
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

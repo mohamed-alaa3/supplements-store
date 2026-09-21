@@ -1,0 +1,7 @@
+.static-page { padding-block: var(--space-xl); max-width: 640px; }
+.faq-list { margin-block-start: var(--space-md); display: flex; flex-direction: column; gap: var(--space-xs); }
+.faq-item { border: 1px solid var(--color-border); border-radius: var(--radius-md); overflow: hidden; background: var(--color-surface-raised); }
+.faq-item__question { width: 100%; display: flex; align-items: center; justify-content: space-between; padding: var(--space-sm) var(--space-md); background: none; border: none; font-weight: 600; text-align: start; }
+.faq-item__icon { transition: transform var(--dur-base) var(--ease-standard); font-size: 1.2rem; color: var(--color-on-surface-muted); }
+.faq-item__icon.is-open { transform: rotate(45deg); color: var(--color-volt); }
+.faq-item__answer { padding: 0 var(--space-md) var(--space-md); color: var(--color-on-surface-muted); }

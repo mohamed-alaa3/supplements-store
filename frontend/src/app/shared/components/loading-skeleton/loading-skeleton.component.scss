@@ -1,0 +1,29 @@
+.skeleton {
+  background: var(--color-surface-sunken);
+  border-radius: var(--radius-sm);
+  margin-block-end: var(--space-2xs);
+  position: relative;
+  overflow: hidden;
+}
+.skeleton--circle { border-radius: 50%; }
+.shimmer::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent);
+  transform: translateX(-100%);
+  animation: shimmer 1.6s infinite;
+}
+:root[data-theme='dark'] .shimmer::after { background: linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent); }
+@keyframes shimmer { to { transform: translateX(100%); } }
+
+.skeleton-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--space-md);
+}
+.skeleton-card__image { height: 220px; border-radius: var(--radius-lg); margin-block-end: var(--space-xs); }
+.skeleton-card__line { height: 12px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .shimmer::after { animation: none; }
+}

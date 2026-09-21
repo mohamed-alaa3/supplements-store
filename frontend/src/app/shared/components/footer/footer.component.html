@@ -1,0 +1,34 @@
+<footer class="footer">
+  <div class="container footer__top">
+    <div class="footer__brand">
+      <span class="navbar__logo-mark footer__mark">S</span>
+      <p class="text-muted footer__tagline">{{ 'footer.tagline' | t }}</p>
+    </div>
+
+    <div class="footer__col">
+      <p class="text-label">{{ 'footer.shop' | t }}</p>
+      <a routerLink="/shop">{{ 'nav.shop' | t }}</a>
+      <a routerLink="/bundles">{{ 'nav.bundles' | t }}</a>
+      <a routerLink="/bundle-builder">{{ 'nav.bundleBuilder' | t }}</a>
+    </div>
+
+    <div class="footer__col">
+      <p class="text-label">{{ 'footer.company' | t }}</p>
+      <a routerLink="/about">{{ 'nav.about' | t }}</a>
+      <a routerLink="/contact">{{ 'nav.contact' | t }}</a>
+      <a routerLink="/faq">{{ 'nav.faq' | t }}</a>
+    </div>
+
+    <div class="footer__col footer__newsletter">
+      <p class="text-label">{{ 'footer.newsletterTitle' | t }}</p>
+      <form class="footer__newsletter-form" (submit)="$event.preventDefault()">
+        <input type="email" placeholder="you@email.com" />
+        <button type="submit" class="btn btn-primary btn-sm">{{ 'footer.newsletterCta' | t }}</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="container footer__bottom">
+    <span class="text-muted">© {{ year }} Supplena. {{ 'footer.rights' | t }}</span>
+  </div>
+</footer>

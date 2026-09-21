@@ -1,0 +1,86 @@
+<div class="modal-backdrop" [attr.dir]="lang.isRtl() ? 'rtl' : 'ltr'" (click)="onBackdropClick($event)" role="dialog" aria-modal="true">
+  <div class="modal-container">
+    <div class="modal-card" [class.success-state]="isSuccess()">
+      <!-- Success State -->
+      @if (isSuccess()) {
+        <div class="success-content">
+          <div class="success-icon">
+            <lucide-icon [img]="icons.CheckCircle" [size]="48"></lucide-icon>
+          </div>
+          <h2>{{ 'auth.verify.success' | t }}</h2>
+        </div>
+      } @else {
+        <!-- Header -->
+        <div class="modal-header">
+          <div class="modal-icon">
+            <lucide-icon [img]="icons.ShieldCheck" [size]="32"></lucide-icon>
+          </div>
+          <h2>{{ 'auth.verify.title' | t }}</h2>
+          <p>{{ 'auth.verify.subtitle' | t }}</p>
+          <p class="email-display">{{ email() }}</p>
+        </div>
+
+        <!-- Code Input -->
+        <div class="code-section">
+          <div class="code-input-wrapper" [class.error]="errorMessage()" [class.verifying]="isVerifying()">
+            <lucide-icon [img]="icons.Mail" [size]="20" class="input-icon"></lucide-icon>
+            <input
+              #codeInput
+              type="text"
+              inputmode="numeric"
+              autocomplete="one-time-code"
+              [placeholder]="'auth.verify.codePlaceholder' | t"
+              [value]="code()"
+              (input)="onCodeInput($event)"
+              (keydown)="onKeydown($event)"
+              maxlength="6"
+              [disabled]="isVerifying()"
+              class="code-input"
+            />
+          </div>
+
+          @if (errorMessage()) {
+            <div class="error-message">
+              <lucide-icon [img]="icons.AlertCircle" [size]="14"></lucide-icon>
+              <span>{{ errorMessage() }}</span>
+            </div>
+          }
+        </div>
+
+        <!-- Verify Button -->
+        <button
+          class="btn-verify"
+          (click)="verify()"
+          [disabled]="code().length !== 6 || isVerifying()"
+        >
+          @if (isVerifying()) {
+            <span class="spinner"></span>
+            {{ 'auth.verify.loading' | t }}
+          } @else {
+            {{ 'auth.verify.submit' | t }}
+          }
+        </button>
+
+        <!-- Resend Section -->
+        <div class="resend-section">
+          @if (cooldownSeconds() > 0) {
+            <span class="resend-cooldown">
+              {{ 'auth.verify.resendIn' | t }} {{ cooldownSeconds() }}s
+            </span>
+          } @else {
+            <button class="resend-btn" (click)="resend()" [disabled]="isResending()">
+              <lucide-icon [img]="icons.RefreshCw" [size]="14" [class.spinning]="isResending()"></lucide-icon>
+              {{ 'auth.verify.resend' | t }}
+            </button>
+          }
+        </div>
+
+        <!-- Security Note -->
+        <p class="security-note">
+          <lucide-icon [img]="icons.ShieldCheck" [size]="14"></lucide-icon>
+          {{ 'auth.verify.doNotShare' | t }}
+        </p>
+      }
+    </div>
+  </div>
+</div>

@@ -1,0 +1,110 @@
+<div class="container shop">
+  <div class="shop__header">
+    <h1 class="text-h1">{{ 'shop.title' | t }}</h1>
+    <div class="shop__header-actions">
+      <button type="button" class="btn btn-outline shop__filter-toggle" (click)="isFilterPanelOpen.set(!isFilterPanelOpen())">
+        {{ 'shop.filters' | t }}
+      </button>
+      <select class="shop__sort" [ngModel]="query.sort" (ngModelChange)="onSortChange($event)" [attr.aria-label]="'shop.sortBy' | t">
+        <option value="newest">{{ 'shop.sortNewest' | t }}</option>
+        <option value="price_asc">{{ 'shop.sortPriceAsc' | t }}</option>
+        <option value="price_desc">{{ 'shop.sortPriceDesc' | t }}</option>
+        <option value="rating">{{ 'shop.sortRating' | t }}</option>
+        <option value="popularity">{{ 'shop.sortPopularity' | t }}</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="shop__layout">
+    <aside class="shop__filters" [class.is-open]="isFilterPanelOpen()">
+      <div class="shop__filters-header">
+        <p class="text-h3">{{ 'shop.filters' | t }}</p>
+        <button type="button" class="shop__filters-close" (click)="isFilterPanelOpen.set(false)" aria-label="Close filters">✕</button>
+      </div>
+
+      <div class="filter-group">
+        <p class="text-label">{{ 'shop.category' | t }}</p>
+        @for (c of categories(); track c._id) {
+          <label class="filter-checkbox">
+            <input type="checkbox" [checked]="query.category === c._id" (change)="toggleCategory(c._id)" />
+            {{ categoryName(c) }}
+          </label>
+        }
+      </div>
+
+      <div class="filter-group">
+        <p class="text-label">{{ 'shop.brand' | t }}</p>
+        @for (b of brands(); track b._id) {
+          <label class="filter-checkbox">
+            <input type="checkbox" [checked]="query.brand === b._id" (change)="toggleBrand(b._id)" />
+            {{ b.name }}
+          </label>
+        }
+      </div>
+
+      <div class="filter-group">
+        <p class="text-label">{{ 'shop.priceRange' | t }}</p>
+        <div class="filter-price">
+          <input type="number" min="0" [(ngModel)]="minPriceInput" placeholder="Min" />
+          <span>—</span>
+          <input type="number" min="0" [(ngModel)]="maxPriceInput" placeholder="Max" />
+        </div>
+      </div>
+
+      <div class="filter-group">
+        <label class="filter-checkbox">
+          <input type="checkbox" [checked]="!!query.inStock" (change)="toggleInStock()" />
+          {{ 'shop.inStockOnly' | t }}
+        </label>
+      </div>
+
+      <div class="filter-group filter-group--actions">
+        <button type="button" class="btn btn-primary" (click)="applyFilters()">{{ 'common.apply' | t }}</button>
+        <button type="button" class="btn btn-ghost" (click)="clearFilters()">{{ 'shop.clearFilters' | t }}</button>
+      </div>
+    </aside>
+
+    <div class="shop__filters-backdrop" [class.is-visible]="isFilterPanelOpen()" (click)="isFilterPanelOpen.set(false)"></div>
+
+    <div class="shop__results">
+      @if (meta(); as m) {
+        <p class="text-muted shop__count">{{ 'shop.resultsCount' | t: { count: m.totalItems } }}</p>
+      }
+
+      @switch (state()) {
+        @case ('loading') { <app-loading-skeleton variant="card" [count]="8"></app-loading-skeleton> }
+        @case ('error') {
+          <app-empty-state kind="error" [title]="'common.errorTitle' | t" [body]="'common.errorBody' | t">
+            <button type="button" class="btn btn-outline" (click)="fetch()">{{ 'common.retry' | t }}</button>
+          </app-empty-state>
+        }
+        @case ('empty') {
+          <app-empty-state [title]="'shop.title' | t" [body]="'common.noResultsBody' | t">
+            <button type="button" class="btn btn-outline" (click)="clearFilters()">{{ 'shop.clearFilters' | t }}</button>
+          </app-empty-state>
+        }
+        @case ('success') {
+          <div class="product-grid">
+            @for (product of products(); track product._id; let i = $index) {
+              <div appReveal [revealDelay]="(i % 4) * 0.05">
+                <app-product-card [product]="product" [isWishlisted]="isWishlisted(product._id)" (toggleWishlist)="onToggleWishlist($event)"></app-product-card>
+              </div>
+            }
+          </div>
+
+          @if (meta(); as m) {
+            @if (m.totalPages > 1) {
+              <nav class="pagination" aria-label="Pagination">
+                <button type="button" class="pagination__btn" [disabled]="m.page <= 1" (click)="goToPage(m.page - 1)">‹</button>
+                @for (p of pageNumbers(m.totalPages); track p) {
+                  <button type="button" class="pagination__btn" [class.is-active]="m.page === p" (click)="goToPage(p)">{{ p }}</button>
+                }
+                <button type="button" class="pagination__btn" [disabled]="m.page >= m.totalPages" (click)="goToPage(m.page + 1)">›</button>
+              </nav>
+            }
+          }
+        }
+      }
+    </div>
+  </div>
+</div>

@@ -1,0 +1,403 @@
+/* =========================================================
+   FOOTER
+========================================================= */
+
+.footer {
+  margin-block-start: var(--space-xl);
+
+  background: var(--color-ink);
+
+  color: var(--color-surface);
+}
+
+
+/* =========================================================
+   DARK MODE
+========================================================= */
+
+:root[data-theme='dark'] .footer {
+  background: var(--color-surface-raised);
+
+  color: var(--color-on-surface);
+}
+
+
+/* =========================================================
+   FOOTER TOP
+========================================================= */
+
+.footer__top {
+  display: grid;
+
+  grid-template-columns:
+    1.4fr 1fr 1fr 1.2fr;
+
+  gap: var(--space-lg);
+
+  padding-block: var(--space-xl);
+}
+
+
+/* =========================================================
+   BRAND
+========================================================= */
+
+.footer__brand {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: var(--space-2xs);
+
+  max-width: 30ch;
+
+  min-width: 0;
+}
+
+
+.footer__mark {
+  background: var(--color-volt);
+
+  color: var(--color-volt-ink);
+}
+
+
+/* =========================================================
+   TAGLINE
+========================================================= */
+
+.footer__tagline {
+  color: color-mix(in srgb,
+      var(--color-surface) 65%,
+      transparent);
+
+  line-height: 1.7;
+}
+
+:root[data-theme='dark'] .footer__tagline {
+  color: var(--color-on-surface-muted);
+}
+
+
+/* =========================================================
+   FOOTER COLUMNS
+========================================================= */
+
+.footer__col {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: var(--space-xs);
+
+  min-width: 0;
+}
+
+
+.footer__col a {
+  color: color-mix(in srgb,
+      var(--color-surface) 80%,
+      transparent);
+
+  font-size: 0.9rem;
+
+  text-decoration: none;
+
+  line-height: 1.6;
+
+  transition:
+    color var(--dur-fast) var(--ease-standard),
+    transform var(--dur-fast) var(--ease-standard);
+}
+
+
+:root[data-theme='dark'] .footer__col a {
+  color: var(--color-on-surface-muted);
+}
+
+
+.footer__col a:hover {
+  color: var(--color-volt);
+}
+
+
+/* =========================================================
+   NEWSLETTER
+========================================================= */
+
+.footer__newsletter-form {
+  display: flex;
+
+  align-items: center;
+
+  gap: var(--space-2xs);
+
+  width: 100%;
+
+  min-width: 0;
+}
+
+
+.footer__newsletter-form input {
+  flex: 1;
+
+  min-width: 0;
+
+  width: 100%;
+
+  box-sizing: border-box;
+
+  padding: 0.6rem 0.8rem;
+
+  border-radius: var(--radius-pill);
+
+  border: 1px solid rgba(255, 255, 255, 0.2);
+
+  background: rgba(255, 255, 255, 0.06);
+
+  color: inherit;
+
+  outline: none;
+
+  transition:
+    border-color var(--dur-fast) var(--ease-standard),
+    box-shadow var(--dur-fast) var(--ease-standard);
+}
+
+
+.footer__newsletter-form input::placeholder {
+  color: rgba(255, 255, 255, 0.55);
+}
+
+
+.footer__newsletter-form input:focus {
+  border-color: var(--color-volt);
+
+  box-shadow:
+    0 0 0 3px color-mix(in srgb,
+      var(--color-volt) 18%,
+      transparent);
+}
+
+
+/* =========================================================
+   NEWSLETTER BUTTON
+========================================================= */
+
+.footer__newsletter-form button {
+  flex-shrink: 0;
+
+  min-height: 38px;
+
+  padding-inline: 1rem;
+
+  border: 0;
+
+  border-radius: var(--radius-pill);
+
+  background: var(--color-volt);
+
+  color: var(--color-volt-ink);
+
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    transform var(--dur-fast) var(--ease-standard),
+    opacity var(--dur-fast) var(--ease-standard);
+}
+
+
+.footer__newsletter-form button:hover {
+  opacity: 0.9;
+}
+
+
+.footer__newsletter-form button:active {
+  transform: scale(0.96);
+}
+
+
+/* =========================================================
+   FOOTER BOTTOM
+========================================================= */
+
+.footer__bottom {
+  border-block-start:
+    1px solid rgba(255, 255, 255, 0.1);
+
+  padding-block: var(--space-sm);
+
+  font-size: 0.8rem;
+
+  color: color-mix(in srgb,
+      var(--color-surface) 65%,
+      transparent);
+}
+
+
+:root[data-theme='dark'] .footer__bottom {
+  color: var(--color-on-surface-muted);
+
+  border-color: var(--color-border);
+}
+
+
+/* =========================================================
+   LARGE TABLETS
+========================================================= */
+
+@media (max-width: 1100px) {
+
+  .footer__top {
+    grid-template-columns:
+      1.3fr 1fr 1fr;
+
+    gap: var(--space-md);
+  }
+
+}
+
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 860px) {
+
+  .footer__top {
+    grid-template-columns:
+      1fr 1fr;
+
+    gap: var(--space-lg) var(--space-md);
+
+    padding-block: var(--space-lg);
+  }
+
+
+  .footer__brand {
+    max-width: 36ch;
+  }
+
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 560px) {
+
+  .footer {
+    margin-block-start: var(--space-lg);
+  }
+
+
+  .footer__top {
+    grid-template-columns: 1fr;
+
+    gap: var(--space-lg);
+
+    padding-block: var(--space-lg);
+  }
+
+
+  .footer__brand {
+    max-width: 100%;
+  }
+
+
+  .footer__col {
+    gap: var(--space-2xs);
+  }
+
+
+  .footer__col a {
+    font-size: 0.92rem;
+
+    min-height: 32px;
+
+    display: flex;
+
+    align-items: center;
+  }
+
+
+  /* -------------------------------------------------------
+     Newsletter
+  ------------------------------------------------------- */
+
+  .footer__newsletter-form {
+    flex-direction: column;
+
+    align-items: stretch;
+
+    gap: var(--space-xs);
+  }
+
+
+  .footer__newsletter-form input,
+  .footer__newsletter-form button {
+    width: 100%;
+
+    min-height: 42px;
+
+    box-sizing: border-box;
+  }
+
+
+  /* -------------------------------------------------------
+     Bottom
+  ------------------------------------------------------- */
+
+  .footer__bottom {
+    padding-block: var(--space-sm);
+
+    text-align: center;
+
+    line-height: 1.6;
+  }
+
+}
+
+
+/* =========================================================
+   VERY SMALL PHONES
+========================================================= */
+
+@media (max-width: 360px) {
+
+  .footer__top {
+    gap: var(--space-md);
+
+    padding-block: var(--space-md);
+  }
+
+
+  .footer__newsletter-form input,
+  .footer__newsletter-form button {
+    min-height: 40px;
+  }
+
+
+  .footer__col a {
+    font-size: 0.88rem;
+  }
+
+}
+
+
+/* =========================================================
+   REDUCED MOTION
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+  .footer__col a,
+  .footer__newsletter-form input,
+  .footer__newsletter-form button {
+    transition: none;
+  }
+
+}

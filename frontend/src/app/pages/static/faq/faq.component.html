@@ -1,0 +1,17 @@
+<div class="container static-page">
+  <h1 class="text-h1" appReveal>{{ 'nav.faq' | t }}</h1>
+
+  <div class="faq-list">
+@for (entry of entries; let i = $index; track i) {
+      <div class="faq-item" appReveal [revealDelay]="i * 0.05">
+        <button type="button" class="faq-item__question" (click)="toggle(i)" [attr.aria-expanded]="openIndex() === i">
+          <span>{{ lang.lang() === 'ar' ? entry.qAr : entry.qEn }}</span>
+          <span class="faq-item__icon" [class.is-open]="openIndex() === i">+</span>
+        </button>
+        @if (openIndex() === i) {
+          <p class="faq-item__answer">{{ lang.lang() === 'ar' ? entry.aAr : entry.aEn }}</p>
+        }
+      </div>
+    }
+  </div>
+</div>

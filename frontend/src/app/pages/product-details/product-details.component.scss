@@ -1,0 +1,161 @@
+.pd { padding-block: var(--space-lg); }
+
+.pd__loading { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-lg); }
+.pd__loading-side { display: flex; flex-direction: column; gap: var(--space-sm); }
+@media (max-width: 860px) { .pd__loading { grid-template-columns: 1fr; } }
+
+.pd__grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-lg); align-items: start; }
+@media (max-width: 860px) { .pd__grid { grid-template-columns: 1fr; } }
+
+/*
+ * Grid items default to `min-width: auto`, which means their *content's*
+ * intrinsic size (a large raster image, before `width:100%`/object-fit have
+ * fully resolved, or a Swiper slide that got an inline pixel width from a
+ * container-size measurement taken too early) can force this track wider
+ * than its `1fr` share — pushing the whole grid layout out and covering the
+ * rest of the page. This is the actual root cause of the "image sometimes
+ * blows up" bug (worse on larger/slower-loading images, e.g. protein tub
+ * photos, because that widens the race window). `min-width: 0` removes the
+ * loophole entirely, for every child, regardless of what any image or
+ * Swiper does — not a fix for one image, a structural guarantee.
+ */
+.pd__grid > * { min-width: 0; min-height: 0; }
+
+/* ---- Gallery --------------------------------------------------------- */
+.pd-gallery__main-wrap { position: relative; min-width: 0; max-width: 100%; }
+.pd-gallery__main {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--color-surface-sunken);
+  width: 100%;
+  max-width: 100%;
+  /* Belt-and-braces on top of aspect-ratio: even if aspect-ratio isn't
+     honored in some edge case (old browser, a Swiper-injected inline style,
+     etc.), the gallery can never grow past this and swallow the page. */
+  max-height: 640px;
+}
+.pd-gallery__main img,
+.pd-gallery__main .swiper-slide img {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  aspect-ratio: 1;
+  object-fit: cover;
+  object-position: center;
+}
+/* Swiper sets inline widths on slides for its layout math; keep them from
+   ever exceeding the container regardless of what value it computed. */
+.pd-gallery__main .swiper-slide { max-width: 100%; }
+.pd-gallery__placeholder { aspect-ratio: 1; max-height: 640px; background: var(--color-surface-sunken); }
+
+.pd-gallery__prev, .pd-gallery__next {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  width: 38px; height: 38px; border-radius: 50%;
+  background: var(--color-surface-raised); border: 1px solid var(--color-border);
+  display: grid; place-items: center; font-size: 1.2rem;
+  z-index: 2;
+}
+.pd-gallery__prev { inset-inline-start: var(--space-xs); }
+.pd-gallery__next { inset-inline-end: var(--space-xs); }
+
+.pd-gallery__thumbs { margin-block-start: var(--space-sm); max-width: 100%; }
+.pd-gallery__thumb { width: 72px; min-width: 72px; max-width: 72px; aspect-ratio: 1; border-radius: var(--radius-sm); overflow: hidden; cursor: pointer; border: 2px solid transparent; opacity: 0.6; transition: opacity var(--dur-fast), border-color var(--dur-fast); }
+.pd-gallery__thumb img { display: block; width: 100%; height: 100%; max-width: 100%; object-fit: cover; }
+::ng-deep .pd-gallery__thumbs .swiper-slide-thumb-active .pd-gallery__thumb { opacity: 1; border-color: var(--color-volt); }
+
+/* ---- Buybox ------------------------------------------------------------*/
+.pd-buybox { display: flex; flex-direction: column; gap: var(--space-sm); }
+.pd-buybox__price { display: flex; align-items: center; gap: var(--space-sm); margin-block: var(--space-2xs); }
+
+.variant-chips { display: flex; flex-wrap: wrap; gap: var(--space-2xs); margin-block-start: var(--space-2xs); }
+.variant-chip {
+  padding: 0.55rem 1rem;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--color-border-strong);
+  background: var(--color-surface-raised);
+  font-size: 0.875rem; font-weight: 600;
+  transition: border-color var(--dur-fast), background-color var(--dur-fast), transform var(--dur-fast);
+}
+.variant-chip:hover:not(:disabled) { border-color: var(--color-on-surface); }
+.variant-chip.is-selected { background: var(--color-volt); border-color: var(--color-volt); color: var(--color-volt-ink); transform: translateY(-1px); }
+.variant-chip:disabled { opacity: 0.4; text-decoration: line-through; cursor: not-allowed; }
+
+.pd-buybox__actions { display: flex; align-items: center; gap: var(--space-sm); margin-block-start: var(--space-xs); }
+.pd-buybox__add { flex: 1; }
+.pd-buybox__wishlist {
+  width: 46px; height: 46px; border-radius: 50%;
+  border: 1px solid var(--color-border-strong);
+  display: grid; place-items: center;
+  color: var(--color-on-surface);
+  transition: transform var(--dur-fast), color var(--dur-fast);
+}
+.pd-buybox__wishlist:hover { transform: scale(1.06); }
+.pd-buybox__wishlist.is-active { color: var(--color-ember); border-color: var(--color-ember); }
+
+.pd-buybox__sku { margin-block-start: 0; }
+.pd-buybox__description { padding-block-start: var(--space-sm); border-block-start: 1px solid var(--color-border); }
+
+/* ---- Reviews ------------------------------------------------------------*/
+.pd-reviews { padding-block: var(--space-xl); border-block-start: 1px solid var(--color-border); margin-block-start: var(--space-lg); max-width: 720px; }
+.review-list { display: flex; flex-direction: column; gap: var(--space-sm); margin-block: var(--space-md); }
+.review-item { padding-block-end: var(--space-sm); border-block-end: 1px solid var(--color-border); }
+.review-item__title { font-weight: 600; margin-block: var(--space-3xs); }
+
+.review-form { display: flex; flex-direction: column; gap: var(--space-xs); margin-block-start: var(--space-lg); }
+.review-form__rating { display: flex; gap: var(--space-3xs); }
+.review-form__star { font-size: 1.5rem; background: none; border: none; color: var(--color-border-strong); transition: color var(--dur-fast); }
+.review-form__star.is-filled { color: var(--color-ember); }
+.review-form input, .review-form textarea {
+  padding: 0.7rem 0.9rem; border-radius: var(--radius-md);
+  border: 1px solid var(--color-border); background: var(--color-surface-raised);
+  font-family: inherit;
+}
+.review-form button { align-self: flex-start; }
+
+
+.variant-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.38rem;
+}
+
+.variant-chip__flavor-icon,
+.pd-buybox__selected-flavor-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  line-height: 1;
+}
+
+.variant-chip__flavor-icon {
+  font-size: 1.05rem;
+}
+
+.variant-chip__separator {
+  opacity: 0.45;
+}
+
+.pd-buybox__selected-flavor {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: fit-content;
+  margin-top: 0.75rem;
+  padding: 0.45rem 0.7rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface-raised);
+  color: var(--color-ink);
+  font-weight: 700;
+}
+
+.pd-buybox__selected-flavor-icon {
+  width: 1.45rem;
+  height: 1.45rem;
+  border-radius: 50%;
+  background: var(--color-surface);
+  font-size: 1rem;
+}

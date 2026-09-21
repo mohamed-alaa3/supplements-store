@@ -1,0 +1,20 @@
+:host { display: block; min-height: 100%; }
+
+.app-outlet {
+  min-height: 60vh;
+}
+
+.skip-link {
+  position: absolute;
+  inset-inline-start: -9999px;
+  inset-block-start: 0;
+  background: var(--color-volt);
+  color: var(--color-volt-ink);
+  padding: 0.75rem 1.25rem;
+  z-index: 999;
+  border-radius: 0 0 var(--radius-sm) 0;
+  font-weight: 700;
+}
+.skip-link:focus {
+  inset-inline-start: 0;
+}

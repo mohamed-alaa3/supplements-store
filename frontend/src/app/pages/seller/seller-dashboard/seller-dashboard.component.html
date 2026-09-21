@@ -1,0 +1,96 @@
+<div class="container seller-page">
+  <header class="seller-page__header">
+    <div>
+      <p class="eyebrow">{{ lang.pick('إدارة المتجر', 'Store management') }}</p>
+      <h1 class="text-h1">{{ lang.pick('لوحة تحكم البائع', 'Seller Dashboard') }}</h1>
+      @if (profile()) {
+        <p class="seller-page__store">{{ profile()?.storeName }} · <span class="status-badge">{{ profile()?.status }}</span></p>
+      }
+    </div>
+    @if (profile()) {
+      <button type="button" class="btn btn-primary" (click)="newProduct()">+ {{ lang.pick('إضافة منتج', 'Add Product') }}</button>
+    }
+  </header>
+
+  @if (loading()) {
+    <app-loading-skeleton variant="block" height="120px" [count]="2"></app-loading-skeleton>
+  } @else if (!profile()) {
+    <app-empty-state [title]="lang.pick('لا يوجد ملف بائع', 'No seller profile')" [body]="lang.pick('تأكد من أن حساب البائع مفعل.', 'Make sure your seller account is active.')"></app-empty-state>
+  } @else {
+    <div class="account-tabs">
+      <button type="button" [class.is-active]="tab() === 'overview'" (click)="setTab('overview')">{{ lang.pick('نظرة عامة', 'Overview') }}</button>
+      <button type="button" [class.is-active]="tab() === 'products'" (click)="setTab('products')">{{ lang.pick('المنتجات', 'Products') }}</button>
+      <button type="button" [class.is-active]="tab() === 'orders'" (click)="setTab('orders')">{{ lang.pick('الطلبات', 'Orders') }}</button>
+    </div>
+
+    @if (tab() === 'overview') {
+      @if (summary(); as s) {
+        <div class="stat-grid">
+          <div class="stat-card"><span class="stat-card__value">{{ s.totalProducts }}</span><span class="text-label">{{ lang.pick('المنتجات', 'Products') }}</span></div>
+          <div class="stat-card"><span class="stat-card__value">{{ s.activeProducts }}</span><span class="text-label">{{ lang.pick('النشطة', 'Active') }}</span></div>
+          <div class="stat-card"><span class="stat-card__value">{{ s.totalOrders }}</span><span class="text-label">{{ lang.pick('الطلبات', 'Orders') }}</span></div>
+          <div class="stat-card"><span class="stat-card__value ltr-token">{{ s.totalRevenue | number: '1.0-0' }}</span><span class="text-label">{{ lang.pick('الإيرادات (جنيه)', 'Revenue (EGP)') }}</span></div>
+          <div class="stat-card"><span class="stat-card__value">{{ s.lowStockVariants }}</span><span class="text-label">{{ lang.pick('مخزون منخفض', 'Low stock') }}</span></div>
+        </div>
+      } @else {
+        <app-loading-skeleton variant="block" height="90px" [count]="1"></app-loading-skeleton>
+      }
+    }
+
+    @if (tab() === 'products') {
+      <div class="section-toolbar">
+        <div>
+          <h2>{{ lang.pick('منتجاتي', 'My Products') }}</h2>
+          <p>{{ lang.pick('إدارة البيانات الكاملة والـVariants والمخزون لكل منتج.', 'Manage full product data, variants and stock for every product.') }}</p>
+        </div>
+        <button type="button" class="btn btn-primary" (click)="newProduct()">+ {{ lang.pick('إضافة منتج', 'New Product') }}</button>
+      </div>
+
+      <div class="dashboard-table">
+        @for (p of products(); track p._id) {
+          <article class="dashboard-row">
+            <div class="dashboard-row__product">
+              <strong>{{ lang.pick(p.nameAr, p.nameEn) }}</strong>
+              <small>{{ productTypeLabel(p.productType) }}</small>
+            </div>
+            <span class="ltr-token">{{ (p.priceFrom ?? p.basePrice) | number: '1.0-0' }} EGP</span>
+            <span class="status-badge">{{ statusLabel(p.isActive) }}</span>
+            <div class="dashboard-row__actions">
+              <button type="button" class="btn btn-ghost btn-sm" (click)="editProduct(p)">{{ lang.pick('تعديل', 'Edit') }}</button>
+              <button type="button" class="btn btn-ghost btn-sm" (click)="toggleVariants(p)">{{ variantProduct()?._id === p._id ? lang.pick('إخفاء Variants', 'Hide Variants') : lang.pick('Variants', 'Variants') }}</button>
+              <button type="button" class="btn btn-ghost btn-sm" (click)="toggleProductStatus(p)">{{ p.isActive ? lang.pick('تعطيل', 'Deactivate') : lang.pick('تفعيل', 'Activate') }}</button>
+            </div>
+          </article>
+
+          @if (variantProduct()?._id === p._id) {
+            <app-variant-manager [productId]="p._id" [basePrice]="p.basePrice"></app-variant-manager>
+          }
+        } @empty {
+          <app-empty-state [title]="lang.pick('لا توجد منتجات', 'No products yet')" [body]="lang.pick('ابدأ بإضافة أول منتج لمتجرك.', 'Add your first product to your store.')"></app-empty-state>
+        }
+      </div>
+    }
+
+    @if (tab() === 'orders') {
+      <div class="section-toolbar">
+        <div>
+          <h2>{{ lang.pick('طلبات المنتجات', 'Product Orders') }}</h2>
+          <p>{{ lang.pick('تابع الطلبات وقم بتحديث حالتها.', 'Track orders and update their status.') }}</p>
+        </div>
+      </div>
+      <div class="dashboard-table">
+        @for (o of orders(); track o._id) {
+          <div class="dashboard-row dashboard-row--order">
+            <span class="ltr-token dashboard-row__name">{{ o.orderNumber }}</span>
+            <span class="ltr-token">{{ o.total | number: '1.0-0' }} EGP</span>
+            <select [ngModel]="o.orderStatus" (ngModelChange)="updateOrderStatus(o, $event)">
+              @for (s of orderStatuses; track s) { <option [value]="s">{{ s }}</option> }
+            </select>
+          </div>
+        } @empty {
+          <app-empty-state [title]="lang.pick('لا توجد طلبات', 'No orders yet')" [body]="''"></app-empty-state>
+        }
+      </div>
+    }
+  }
+</div>

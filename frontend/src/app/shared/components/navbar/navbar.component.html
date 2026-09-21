@@ -1,0 +1,558 @@
+<header
+  class="navbar"
+  [class.navbar--scrolled]="isScrolled()"
+>
+
+  <div class="container navbar__row">
+
+
+    <!-- ================================= -->
+    <!-- Mobile Burger -->
+    <!-- ================================= -->
+
+    <button
+      type="button"
+      class="navbar__burger"
+      [class.is-open]="isMobileMenuOpen()"
+      (click)="toggleMobileMenu()"
+      [attr.aria-expanded]="isMobileMenuOpen()"
+      aria-label="Menu"
+    >
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+
+
+    <!-- ================================= -->
+    <!-- Logo -->
+    <!-- ================================= -->
+
+    <a
+      routerLink="/"
+      class="navbar__logo"
+      (click)="closeMobileMenu()"
+    >
+      <span class="navbar__logo-mark">S</span>
+      <span class="navbar__logo-word">SUPPLENA</span>
+    </a>
+
+
+    <!-- ================================= -->
+    <!-- Navigation -->
+    <!-- ================================= -->
+
+    <nav
+      class="navbar__links"
+      [class.is-open]="isMobileMenuOpen()"
+      [attr.dir]="lang.lang() === 'ar' ? 'rtl' : 'ltr'"
+    >
+
+
+      <!-- ================================= -->
+      <!-- Mobile Header -->
+      <!-- ================================= -->
+
+      <div class="navbar__mobile-header">
+
+        <span>
+          {{ 'nav.menu' | t }}
+        </span>
+
+        <button
+          type="button"
+          class="navbar__mobile-close"
+          (click)="closeMobileMenu()"
+          aria-label="Close menu"
+        >
+          ×
+        </button>
+
+      </div>
+
+
+      <!-- ================================= -->
+      <!-- Main Navigation -->
+      <!-- ================================= -->
+
+      <div class="navbar__main-links">
+
+
+        <!-- Shop -->
+
+        <a
+          routerLink="/shop"
+          routerLinkActive="is-active"
+          [routerLinkActiveOptions]="{ exact: true }"
+          (click)="navigateMobile('/shop')"
+        >
+          {{ 'nav.shop' | t }}
+        </a>
+
+
+        <!-- Bundles -->
+
+        <a
+          routerLink="/bundles"
+          routerLinkActive="is-active"
+          [routerLinkActiveOptions]="{ exact: true }"
+          (click)="navigateMobile('/bundles')"
+        >
+          {{ 'nav.bundles' | t }}
+        </a>
+
+
+        <!-- Bundle Builder -->
+
+        <a
+          routerLink="/bundle-builder"
+          routerLinkActive="is-active"
+          [routerLinkActiveOptions]="{ exact: true }"
+          (click)="navigateMobile('/bundle-builder')"
+        >
+          {{ 'nav.bundleBuilder' | t }}
+        </a>
+
+
+        <!-- About -->
+
+        <a
+          routerLink="/about"
+          routerLinkActive="is-active"
+          [routerLinkActiveOptions]="{ exact: true }"
+          (click)="navigateMobile('/about')"
+        >
+          {{ 'nav.about' | t }}
+        </a>
+
+
+        <!-- Contact -->
+
+        <a
+          routerLink="/contact"
+          routerLinkActive="is-active"
+          [routerLinkActiveOptions]="{ exact: true }"
+          (click)="navigateMobile('/contact')"
+        >
+          {{ 'nav.contact' | t }}
+        </a>
+
+      </div>
+
+
+      <!-- ================================= -->
+      <!-- Mobile Account Links -->
+      <!-- ================================= -->
+
+      <div class="navbar__mobile-only">
+
+
+        <!-- Wishlist -->
+
+        <a
+          routerLink="/wishlist"
+          routerLinkActive="is-active"
+          [routerLinkActiveOptions]="{ exact: true }"
+          (click)="navigateMobile('/wishlist')"
+        >
+
+          <span>
+            {{ 'nav.wishlist' | t }}
+          </span>
+
+          @if (wishlist.itemCount() > 0) {
+
+            <span class="navbar__mobile-count">
+              {{ wishlist.itemCount() }}
+            </span>
+
+          }
+
+        </a>
+
+
+        @if (auth.isAuthenticated()) {
+
+
+          <!-- Orders -->
+
+          <a
+            routerLink="/orders"
+            routerLinkActive="is-active"
+            [routerLinkActiveOptions]="{ exact: true }"
+            (click)="navigateMobile('/orders')"
+          >
+            {{ 'nav.orders' | t }}
+          </a>
+
+
+          <!-- Account -->
+
+          <a
+            routerLink="/account"
+            routerLinkActive="is-active"
+            [routerLinkActiveOptions]="{ exact: true }"
+            (click)="navigateMobile('/account')"
+          >
+            {{ 'nav.account' | t }}
+          </a>
+
+
+          <!-- Logout -->
+
+          <button
+            type="button"
+            class="navbar__mobile-logout"
+            (click)="onLogout()"
+          >
+            {{ 'nav.logout' | t }}
+          </button>
+
+
+        } @else {
+
+
+          <!-- Login -->
+
+          <a
+            routerLink="/login"
+            routerLinkActive="is-active"
+            [routerLinkActiveOptions]="{ exact: true }"
+            (click)="navigateMobile('/login')"
+          >
+            {{ 'nav.login' | t }}
+          </a>
+
+
+          <!-- Register -->
+
+          <a
+            routerLink="/register"
+            routerLinkActive="is-active"
+            [routerLinkActiveOptions]="{ exact: true }"
+            (click)="navigateMobile('/register')"
+          >
+            {{ 'auth.signUp' | t }}
+          </a>
+
+        }
+
+      </div>
+
+    </nav>
+
+
+    <!-- ================================= -->
+    <!-- Search -->
+    <!-- ================================= -->
+
+    <div class="navbar__search">
+
+      <input
+        type="search"
+        [placeholder]="'nav.search' | t"
+        #searchInput
+        (keydown.enter)="goToSearch(searchInput.value)"
+      />
+
+    </div>
+
+
+    <!-- ================================= -->
+    <!-- Actions -->
+    <!-- ================================= -->
+
+    <div class="navbar__actions">
+
+
+      <!-- Language -->
+
+      <button
+        type="button"
+        class="navbar__icon-btn"
+        (click)="lang.toggle()"
+        aria-label="Toggle language"
+      >
+        {{ lang.lang() === 'ar' ? 'EN' : 'AR' }}
+      </button>
+
+
+      <!-- Theme -->
+
+      <button
+        type="button"
+        class="navbar__icon-btn"
+        (click)="theme.toggle()"
+        aria-label="Toggle theme"
+      >
+
+        @if (theme.theme() === 'dark') {
+
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+          >
+
+            <circle
+              cx="12"
+              cy="12"
+              r="4.5"
+              stroke="currentColor"
+              stroke-width="1.6"
+            />
+
+            <path
+              d="M12 2.5v2M12 19.5v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M2.5 12h2M19.5 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"
+              stroke="currentColor"
+              stroke-width="1.6"
+              stroke-linecap="round"
+            />
+
+          </svg>
+
+        } @else {
+
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+          >
+
+            <path
+              d="M20 14.5A8.5 8.5 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5Z"
+              stroke="currentColor"
+              stroke-width="1.6"
+              stroke-linejoin="round"
+            />
+
+          </svg>
+
+        }
+
+      </button>
+
+
+      <!-- ================================= -->
+      <!-- Desktop Wishlist -->
+      <!-- ================================= -->
+
+      <a
+        routerLink="/wishlist"
+        class="navbar__icon-btn navbar__desktop-only"
+        aria-label="Wishlist"
+      >
+
+        <svg
+          width="19"
+          height="19"
+          viewBox="0 0 24 24"
+          fill="none"
+        >
+
+          <path
+            d="M12 20.5s-7.5-4.6-10-9.2C.4 8 1.7 4.5 5 3.4c2.2-.7 4.4.2 5.7 2 .3.4.9.4 1.2 0 1.3-1.8 3.5-2.7 5.7-2 3.3 1.1 4.6 4.6 3 7.9-2.5 4.6-10 9.2-10 9.2Z"
+            stroke="currentColor"
+            stroke-width="1.6"
+            stroke-linejoin="round"
+          />
+
+        </svg>
+
+
+        @if (wishlist.itemCount() > 0) {
+
+          <span class="navbar__badge">
+            {{ wishlist.itemCount() }}
+          </span>
+
+        }
+
+      </a>
+
+
+      <!-- ================================= -->
+      <!-- Desktop Account -->
+      <!-- ================================= -->
+
+      <div class="navbar__account navbar__desktop-only">
+
+
+        <button
+          type="button"
+          class="navbar__icon-btn"
+          (click)="toggleAccountMenu()"
+          aria-label="Account"
+        >
+
+          <svg
+            width="19"
+            height="19"
+            viewBox="0 0 24 24"
+            fill="none"
+          >
+
+            <circle
+              cx="12"
+              cy="8"
+              r="3.4"
+              stroke="currentColor"
+              stroke-width="1.6"
+            />
+
+            <path
+              d="M4.5 20c1.4-3.6 4.4-5.5 7.5-5.5s6.1 1.9 7.5 5.5"
+              stroke="currentColor"
+              stroke-width="1.6"
+              stroke-linecap="round"
+            />
+
+          </svg>
+
+        </button>
+
+
+        @if (isAccountMenuOpen()) {
+
+          <div class="navbar__dropdown">
+
+
+            @if (auth.isAuthenticated()) {
+
+
+              <a
+                routerLink="/account"
+                (click)="toggleAccountMenu()"
+              >
+                {{ 'nav.account' | t }}
+              </a>
+
+
+              <a
+                routerLink="/orders"
+                (click)="toggleAccountMenu()"
+              >
+                {{ 'nav.orders' | t }}
+              </a>
+
+
+              @if (auth.role() === 'seller') {
+
+                <a
+                  routerLink="/seller"
+                  (click)="toggleAccountMenu()"
+                >
+                  {{ 'nav.sellerDashboard' | t }}
+                </a>
+
+              }
+
+
+              @if (auth.role() === 'admin') {
+
+                <a
+                  routerLink="/admin"
+                  (click)="toggleAccountMenu()"
+                >
+                  {{ 'nav.adminDashboard' | t }}
+                </a>
+
+              }
+
+
+              <button
+                type="button"
+                (click)="onLogout()"
+              >
+                {{ 'nav.logout' | t }}
+              </button>
+
+
+            } @else {
+
+
+              <a
+                routerLink="/login"
+                (click)="toggleAccountMenu()"
+              >
+                {{ 'nav.login' | t }}
+              </a>
+
+
+              <a
+                routerLink="/register"
+                (click)="toggleAccountMenu()"
+              >
+                {{ 'auth.signUp' | t }}
+              </a>
+
+            }
+
+          </div>
+
+        }
+
+      </div>
+
+
+      <!-- ================================= -->
+      <!-- Cart -->
+      <!-- ================================= -->
+
+      <button
+        type="button"
+        class="navbar__icon-btn navbar__cart"
+        (click)="cartDrawer.toggle()"
+        aria-label="Cart"
+        [class.is-bumped]="cartBump()"
+      >
+
+        <svg
+          width="19"
+          height="19"
+          viewBox="0 0 24 24"
+          fill="none"
+        >
+
+          <path
+            d="M3 4h2l2.4 12.1a2 2 0 0 0 2 1.6h7.4a2 2 0 0 0 2-1.6L20 8H6"
+            stroke="currentColor"
+            stroke-width="1.6"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+
+          <circle
+            cx="9.5"
+            cy="20.5"
+            r="1.3"
+            fill="currentColor"
+          />
+
+          <circle
+            cx="17"
+            cy="20.5"
+            r="1.3"
+            fill="currentColor"
+          />
+
+        </svg>
+
+
+        @if (cart.itemCount() > 0) {
+
+          <span class="navbar__badge navbar__badge--volt">
+            {{ cart.itemCount() }}
+          </span>
+
+        }
+
+      </button>
+
+    </div>
+
+  </div>
+
+</header>

@@ -1,0 +1,49 @@
+<section class="variant-manager">
+  <div class="variant-manager__head">
+    <div>
+      <h3>{{ lang.pick('خيارات المنتج والمخزون', 'Product variants & stock') }}</h3>
+      <p>{{ lang.pick('كل نكهة/حجم له سعر ومخزون مستقل.', 'Each flavor/size has its own price and stock.') }}</p>
+    </div>
+    <button type="button" class="btn btn-outline btn-sm" (click)="startNew()">+ {{ lang.pick('إضافة Variant', 'Add variant') }}</button>
+  </div>
+
+  @if (loading()) { <p class="muted">{{ 'common.loading' | t }}</p> }
+
+  @if (!loading() && variants().length) {
+    <div class="variant-list">
+      @for (v of variants(); track v._id) {
+        <div class="variant-row">
+          <div class="variant-row__identity">
+            <strong class="ltr-token">{{ v.sku }}</strong>
+            <span class="variant-row__flavor">
+              @if (v.flavor) { <span class="variant-row__flavor-icon" aria-hidden="true">{{ flavorIcon(v.flavor) }}</span> }
+              <span>{{ v.flavor || '—' }}</span>
+              @if (v.sizeLabel) { <span>· {{ v.sizeLabel }}</span> }
+              @if (v.scoops) { <span>· {{ v.scoops }} {{ lang.pick('سكوب', 'scoops') }}</span> }
+            </span>
+          </div>
+          <div class="variant-meta"><span>{{ v.price | number:'1.0-2' }} EGP</span><span>{{ v.availableQuantity ?? v.stockQuantity ?? 0 }} {{ lang.pick('متاح', 'available') }}</span></div>
+          <div class="variant-actions"><button type="button" class="btn btn-ghost btn-sm" (click)="edit(v)">{{ lang.pick('تعديل', 'Edit') }}</button><button type="button" class="btn btn-ghost btn-sm danger" (click)="remove(v)">{{ lang.pick('حذف', 'Delete') }}</button></div>
+        </div>
+      }
+    </div>
+  } @else if (!loading()) { <p class="muted">{{ lang.pick('لا توجد Variants بعد.', 'No variants yet.') }}</p> }
+
+  @if (showForm()) {
+    <form class="variant-form" (submit)="$event.preventDefault(); save()">
+      <input [(ngModel)]="draft.sku" name="sku" required [placeholder]="lang.pick('رمز SKU', 'SKU')" />
+      <input [(ngModel)]="draft.flavor" name="flavor" [placeholder]="lang.pick('النكهة', 'Flavor')" />
+      <input [(ngModel)]="draft.sizeLabel" name="sizeLabel" [placeholder]="lang.pick('وصف الحجم', 'Size label')" />
+      <input type="number" [(ngModel)]="draft.sizeValue" name="sizeValue" min="0" [placeholder]="lang.pick('الحجم', 'Size')" />
+      <select [(ngModel)]="draft.sizeUnit" name="sizeUnit"><option value="g">g</option><option value="kg">kg</option></select>
+      <input type="number" [(ngModel)]="draft.servings" name="servings" min="0" [placeholder]="lang.pick('عدد الحصص', 'Servings')" />
+      <input type="number" [(ngModel)]="draft.scoops" name="scoops" min="0" [placeholder]="lang.pick('عدد السكوب', 'Scoops')" />
+      <input type="number" [(ngModel)]="draft.price" name="price" min="0" required [placeholder]="lang.pick('السعر', 'Price')" />
+      <input type="number" [(ngModel)]="draft.compareAtPrice" name="compareAtPrice" min="0" [placeholder]="lang.pick('السعر قبل الخصم', 'Compare at')" />
+      <input type="number" [(ngModel)]="draft.stockQuantity" name="stockQuantity" min="0" [placeholder]="lang.pick('المخزون', 'Stock')" />
+      <input type="number" [(ngModel)]="draft.lowStockThreshold" name="lowStockThreshold" min="0" [placeholder]="lang.pick('حد المخزون المنخفض', 'Low stock')" />
+      <label class="check"><input type="checkbox" [(ngModel)]="draft.trackInventory" name="trackInventory" /> {{ lang.pick('تتبع المخزون', 'Track inventory') }}</label>
+      <div class="variant-form__actions"><button type="submit" class="btn btn-primary" [disabled]="saving()">{{ saving() ? ('common.loading' | t) : ('common.save' | t) }}</button><button type="button" class="btn btn-ghost" (click)="cancel()">{{ lang.pick('إلغاء', 'Cancel') }}</button></div>
+    </form>
+  }
+</section>

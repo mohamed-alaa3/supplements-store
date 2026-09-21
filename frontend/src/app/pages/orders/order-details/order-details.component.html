@@ -1,0 +1,59 @@
+<div class="container order-details-page">
+  @switch (state()) {
+    @case ('loading') { <app-loading-skeleton variant="block" height="360px"></app-loading-skeleton> }
+    @case ('error') {
+      <app-empty-state kind="error" [title]="'common.errorTitle' | t" [body]="'common.errorBody' | t">
+        <a routerLink="/orders" class="btn btn-outline">{{ 'orders.title' | t }}</a>
+      </app-empty-state>
+    }
+    @case ('success') {
+      @if (order(); as o) {
+        <div class="order-details">
+          <header class="order-details__header">
+            <div>
+              <h1 class="text-h1 ltr-token">{{ o.orderNumber }}</h1>
+              <p class="text-muted">{{ o.createdAt | date: 'medium' }}</p>
+            </div>
+            <span class="status-badge">{{ o.orderStatus }}</span>
+          </header>
+
+          <section class="order-details__items">
+            @for (item of o.items; track item.variant) {
+              <div class="order-item-row">
+                <span>{{ lang.pick(item.nameAr, item.nameEn) }} × {{ item.quantity }}</span>
+                <span class="ltr-token">{{ item.lineTotal | number: '1.0-0' }} EGP</span>
+              </div>
+            }
+          </section>
+
+          <section class="order-details__summary">
+            <div><span>{{ 'common.subtotal' | t }}</span><span class="ltr-token">{{ o.subtotal | number: '1.0-0' }} EGP</span></div>
+            @if (o.discountTotal > 0) { <div><span>{{ 'common.discount' | t }}</span><span class="ltr-token">-{{ o.discountTotal | number: '1.0-0' }} EGP</span></div> }
+            <div><span>{{ 'common.shipping' | t }}</span><span class="ltr-token">{{ o.shippingFee | number: '1.0-0' }} EGP</span></div>
+            <div class="order-details__total"><span>{{ 'common.total' | t }}</span><span class="ltr-token">{{ o.total | number: '1.0-0' }} EGP</span></div>
+          </section>
+
+          <section class="order-details__address">
+            <h2 class="text-h3">{{ 'checkout.shippingAddress' | t }}</h2>
+            <p>{{ o.shippingAddress.firstName }} {{ o.shippingAddress.lastName }} · <span class="ltr-token">{{ o.shippingAddress.phone }}</span></p>
+            <p class="text-muted">{{ o.shippingAddress.street }}, {{ o.shippingAddress.area }}, {{ o.shippingAddress.city }}</p>
+          </section>
+
+          @if (canCancel) {
+            <section class="order-details__cancel">
+              @if (!showCancelForm()) {
+                <button type="button" class="btn btn-outline" (click)="showCancelForm.set(true)">{{ 'orders.cancel' | t }}</button>
+              } @else {
+                <textarea rows="2" [(ngModel)]="cancelReason" placeholder="Reason"></textarea>
+                <div class="order-details__cancel-actions">
+                  <button type="button" class="btn btn-primary btn-sm" [disabled]="cancelling() || !cancelReason.trim()" (click)="cancel()">{{ 'common.save' | t }}</button>
+                  <button type="button" class="btn btn-ghost btn-sm" (click)="showCancelForm.set(false)">{{ 'common.cancel' | t }}</button>
+                </div>
+              }
+            </section>
+          }
+        </div>
+      }
+    }
+  }
+</div>

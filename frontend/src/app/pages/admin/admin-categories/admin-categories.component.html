@@ -1,0 +1,27 @@
+<div class="container admin-page">
+  <h1 class="text-h1">Categories</h1>
+  <button type="button" class="btn btn-outline" (click)="showForm.set(!showForm())">+ New category</button>
+
+  @if (showForm()) {
+    <form #catForm="ngForm" class="dashboard-form" (submit)="$event.preventDefault(); create(catForm)" novalidate>
+      <div class="dashboard-form__row">
+        <input type="text" name="nameAr" required [(ngModel)]="newCategory.nameAr" placeholder="Name (Arabic)" />
+        <input type="text" name="nameEn" required [(ngModel)]="newCategory.nameEn" placeholder="Name (English)" />
+      </div>
+      <button type="submit" class="btn btn-primary">Save</button>
+    </form>
+  }
+
+  @if (loading()) {
+    <app-loading-skeleton variant="block" height="50px" [count]="5"></app-loading-skeleton>
+  } @else {
+    <div class="dashboard-table">
+      @for (c of categories(); track c._id) {
+        <div class="dashboard-row">
+          <span class="dashboard-row__name">{{ lang.pick(c.nameAr, c.nameEn) }}</span>
+          <button type="button" class="btn btn-ghost btn-sm" (click)="deactivate(c)">Deactivate</button>
+        </div>
+      }
+    </div>
+  }
+</div>

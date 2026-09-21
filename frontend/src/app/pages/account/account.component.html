@@ -1,0 +1,643 @@
+<div class="container account-page">
+  <header class="account-header">
+    <div>
+      <p class="account-eyebrow">
+        {{ lang.lang() === "ar" ? "حسابك" : "YOUR ACCOUNT" }}
+      </p>
+
+      <h1 class="text-h1">
+        {{ "nav.account" | t }}
+      </h1>
+
+      <p class="account-subtitle text-muted">
+        {{
+          lang.lang() === "ar"
+            ? "إدارة بياناتك وعناوينك وكلمة المرور"
+            : "Manage your profile, addresses, and password"
+        }}
+      </p>
+    </div>
+  </header>
+
+  <!-- Tabs -->
+  <div class="account-tabs" role="tablist">
+    <button
+      type="button"
+      role="tab"
+      [class.is-active]="activeTab() === 'profile'"
+      [attr.aria-selected]="activeTab() === 'profile'"
+      (click)="setTab('profile')"
+    >
+      {{ "auth.fullName" | t }}
+    </button>
+
+    <button
+      type="button"
+      role="tab"
+      [class.is-active]="activeTab() === 'addresses'"
+      [attr.aria-selected]="activeTab() === 'addresses'"
+      (click)="setTab('addresses')"
+    >
+      {{ "checkout.shippingAddress" | t }}
+    </button>
+
+    <button
+      type="button"
+      role="tab"
+      [class.is-active]="activeTab() === 'password'"
+      [attr.aria-selected]="activeTab() === 'password'"
+      (click)="setTab('password')"
+    >
+      {{ "auth.password" | t }}
+    </button>
+  </div>
+
+  <!-- ================= PROFILE ================= -->
+
+  @if (activeTab() === "profile") {
+    <section class="account-section">
+      <div class="section-heading">
+        <h2>
+          {{
+            lang.lang() === "ar"
+              ? "المعلومات الشخصية"
+              : "Personal information"
+          }}
+        </h2>
+
+        <p>
+          {{
+            lang.lang() === "ar"
+              ? "حدّث بيانات حسابك الأساسية."
+              : "Update your basic account information."
+          }}
+        </p>
+      </div>
+
+      <form
+        #profileFormRef="ngForm"
+        class="account-form"
+        (submit)="$event.preventDefault(); saveProfile(profileFormRef)"
+        novalidate
+      >
+        <label class="field">
+          <span class="text-label">
+            {{ "auth.fullName" | t }}
+          </span>
+
+          <input
+            type="text"
+            name="fullName"
+            required
+            [(ngModel)]="profileForm.fullName"
+            autocomplete="name"
+          />
+        </label>
+
+        <label class="field">
+          <span class="text-label">
+            {{ "auth.phone" | t }}
+          </span>
+
+          <input
+            type="tel"
+            name="phone"
+            [(ngModel)]="profileForm.phone"
+            autocomplete="tel"
+          />
+        </label>
+
+        <label class="field">
+          <span class="text-label">
+            {{
+              lang.lang() === "ar"
+                ? "اللغة المفضلة"
+                : "Preferred language"
+            }}
+          </span>
+
+          <select
+            name="preferredLanguage"
+            [(ngModel)]="profileForm.preferredLanguage"
+          >
+            <option value="en">English</option>
+            <option value="ar">العربية</option>
+          </select>
+        </label>
+
+        <button
+          type="submit"
+          class="btn btn-primary account-submit"
+          [disabled]="savingProfile()"
+        >
+          {{ "common.save" | t }}
+        </button>
+      </form>
+    </section>
+  }
+
+  <!-- ================= ADDRESSES ================= -->
+
+  @if (activeTab() === "addresses") {
+    <section class="account-section">
+      <div class="section-heading">
+        <h2>
+          {{
+            lang.lang() === "ar"
+              ? "عناوين الشحن"
+              : "Shipping addresses"
+          }}
+        </h2>
+
+        <p>
+          {{
+            lang.lang() === "ar"
+              ? "احفظ عناوينك لتسريع عملية الدفع."
+              : "Save your addresses for a faster checkout."
+          }}
+        </p>
+      </div>
+
+      <div class="account-addresses">
+        @if (!addressesLoaded()) {
+          <app-loading-skeleton
+            variant="block"
+            height="80px"
+            [count]="2"
+          ></app-loading-skeleton>
+        } @else {
+
+          @for (address of addresses(); track address._id) {
+            <div
+              class="address-card"
+              [class.is-default]="address.isDefault"
+            >
+              <div class="address-card__content">
+                <p class="address-card__name">
+                  {{ address.firstName }}
+                  {{ address.lastName }}
+
+                  @if (address.isDefault) {
+                    <span class="badge badge--volt">
+                      {{
+                        lang.lang() === "ar"
+                          ? "افتراضي"
+                          : "Default"
+                      }}
+                    </span>
+                  }
+                </p>
+
+                <p class="address-card__details text-muted">
+                  {{ address.street }},
+                  {{ address.area }},
+                  {{ address.city }}
+
+                  <span class="address-separator">—</span>
+
+                  <span class="ltr-token">
+                    {{ address.phone }}
+                  </span>
+                </p>
+              </div>
+
+              <div class="address-card__actions">
+                @if (!address.isDefault) {
+                  <button
+                    type="button"
+                    class="btn btn-ghost btn-sm"
+                    (click)="setDefaultAddress(address._id)"
+                  >
+                    {{
+                      lang.lang() === "ar"
+                        ? "تعيين كافتراضي"
+                        : "Set default"
+                    }}
+                  </button>
+                }
+
+                <button
+                  type="button"
+                  class="btn btn-ghost btn-sm address-remove"
+                  (click)="deleteAddress(address._id)"
+                >
+                  {{ "common.remove" | t }}
+                </button>
+              </div>
+            </div>
+          }
+
+          @if (!showNewAddressForm()) {
+            <button
+              type="button"
+              class="btn btn-outline add-address-btn"
+              (click)="showNewAddressForm.set(true)"
+            >
+              +
+              {{
+                lang.lang() === "ar"
+                  ? "إضافة عنوان جديد"
+                  : "Add new address"
+              }}
+            </button>
+          } @else {
+
+            <div class="new-address-card">
+              <div class="section-heading section-heading--small">
+                <h3>
+                  {{
+                    lang.lang() === "ar"
+                      ? "عنوان جديد"
+                      : "New address"
+                  }}
+                </h3>
+              </div>
+
+              <form
+                #addressFormRef="ngForm"
+                class="account-form"
+                (submit)="$event.preventDefault(); addAddress(addressFormRef)"
+                novalidate
+              >
+                <div class="account-form__row">
+                  <label class="field">
+                    <span class="text-label">
+                      {{
+                        lang.lang() === "ar"
+                          ? "الاسم الأول"
+                          : "First name"
+                      }}
+                    </span>
+
+                    <input
+                      type="text"
+                      name="firstName"
+                      required
+                      [(ngModel)]="newAddress.firstName"
+                    />
+                  </label>
+
+                  <label class="field">
+                    <span class="text-label">
+                      {{
+                        lang.lang() === "ar"
+                          ? "اسم العائلة"
+                          : "Last name"
+                      }}
+                    </span>
+
+                    <input
+                      type="text"
+                      name="lastName"
+                      required
+                      [(ngModel)]="newAddress.lastName"
+                    />
+                  </label>
+                </div>
+
+                <label class="field">
+                  <span class="text-label">
+                    {{ "auth.phone" | t }}
+                  </span>
+
+                  <input
+                    type="tel"
+                    name="phone"
+                    required
+                    [(ngModel)]="newAddress.phone"
+                  />
+                </label>
+
+                <div class="account-form__row">
+                  <label class="field">
+                    <span class="text-label">
+                      {{
+                        lang.lang() === "ar"
+                          ? "المدينة"
+                          : "City"
+                      }}
+                    </span>
+
+                    <input
+                      type="text"
+                      name="city"
+                      required
+                      [(ngModel)]="newAddress.city"
+                    />
+                  </label>
+
+                  <label class="field">
+                    <span class="text-label">
+                      {{
+                        lang.lang() === "ar"
+                          ? "المنطقة"
+                          : "Area"
+                      }}
+                    </span>
+
+                    <input
+                      type="text"
+                      name="area"
+                      required
+                      [(ngModel)]="newAddress.area"
+                    />
+                  </label>
+                </div>
+
+                <label class="field">
+                  <span class="text-label">
+                    {{
+                      lang.lang() === "ar"
+                        ? "الشارع"
+                        : "Street"
+                    }}
+                  </span>
+
+                  <input
+                    type="text"
+                    name="street"
+                    required
+                    [(ngModel)]="newAddress.street"
+                  />
+                </label>
+
+                <div class="new-address-actions">
+                  <button
+                    type="submit"
+                    class="btn btn-primary"
+                    [disabled]="addingAddress()"
+                  >
+                    {{ "common.save" | t }}
+                  </button>
+
+                  <button
+                    type="button"
+                    class="btn btn-ghost"
+                    (click)="showNewAddressForm.set(false)"
+                  >
+                    {{
+                      lang.lang() === "ar"
+                        ? "إلغاء"
+                        : "Cancel"
+                    }}
+                  </button>
+                </div>
+              </form>
+            </div>
+          }
+        }
+      </div>
+    </section>
+  }
+
+  <!-- ================= PASSWORD ================= -->
+
+  @if (activeTab() === "password") {
+    <section class="account-section">
+      <div class="section-heading">
+        <h2>
+          {{
+            lang.lang() === "ar"
+              ? "تغيير كلمة المرور"
+              : "Change password"
+          }}
+        </h2>
+
+        <p>
+          {{
+            lang.lang() === "ar"
+              ? "استخدم كلمة مرور قوية لحماية حسابك."
+              : "Use a strong password to keep your account secure."
+          }}
+        </p>
+      </div>
+
+      <form
+        #passwordFormRef="ngForm"
+        class="account-form password-form"
+        (submit)="$event.preventDefault(); changePassword(passwordFormRef)"
+        novalidate
+      >
+
+        <!-- Current password -->
+
+        <label class="field">
+          <span class="text-label">
+            {{
+              lang.lang() === "ar"
+                ? "كلمة المرور الحالية"
+                : "Current password"
+            }}
+          </span>
+
+          <div class="password-input">
+            <input
+              [type]="showCurrentPassword ? 'text' : 'password'"
+              name="currentPassword"
+              required
+              [(ngModel)]="passwordForm.currentPassword"
+              autocomplete="current-password"
+            />
+
+            <button
+              type="button"
+              class="password-toggle"
+              (click)="toggleCurrentPassword()"
+              [attr.aria-label]="
+                showCurrentPassword
+                  ? 'Hide password'
+                  : 'Show password'
+              "
+            >
+              @if (showCurrentPassword) {
+                <lucide-icon [img]="EyeOff"></lucide-icon>
+              } @else {
+                <lucide-icon [img]="Eye"></lucide-icon>
+              }
+            </button>
+          </div>
+        </label>
+
+        <!-- New password -->
+
+        <label class="field">
+          <span class="text-label">
+            {{
+              lang.lang() === "ar"
+                ? "كلمة المرور الجديدة"
+                : "New password"
+            }}
+          </span>
+
+          <div class="password-input">
+            <input
+              [type]="showNewPassword ? 'text' : 'password'"
+              name="newPassword"
+              required
+              minlength="8"
+              [(ngModel)]="passwordForm.newPassword"
+              autocomplete="new-password"
+            />
+
+            <button
+              type="button"
+              class="password-toggle"
+              (click)="toggleNewPassword()"
+[attr.aria-label]="
+  showNewPassword
+    ? 'Hide password'
+    : 'Show password'
+"
+            >
+              @if (showNewPassword) {
+                <lucide-icon [img]="EyeOff"></lucide-icon>
+              } @else {
+                <lucide-icon [img]="Eye"></lucide-icon>
+              }
+            </button>
+          </div>
+
+          @if (passwordForm.newPassword.length > 0) {
+            <div class="password-rules">
+
+              <div [class.valid]="hasMinLength()">
+                <span class="rule-icon">
+                  {{ hasMinLength() ? "✓" : "✕" }}
+                </span>
+
+                <span>
+                  {{
+                    lang.lang() === "ar"
+                      ? "8 أحرف على الأقل"
+                      : "At least 8 characters"
+                  }}
+                </span>
+              </div>
+
+              <div [class.valid]="hasLetter()">
+                <span class="rule-icon">
+                  {{ hasLetter() ? "✓" : "✕" }}
+                </span>
+
+                <span>
+                  {{
+                    lang.lang() === "ar"
+                      ? "حرف واحد على الأقل"
+                      : "At least one letter"
+                  }}
+                </span>
+              </div>
+
+              <div [class.valid]="hasNumber()">
+                <span class="rule-icon">
+                  {{ hasNumber() ? "✓" : "✕" }}
+                </span>
+
+                <span>
+                  {{
+                    lang.lang() === "ar"
+                      ? "رقم واحد على الأقل"
+                      : "At least one number"
+                  }}
+                </span>
+              </div>
+
+              <div [class.valid]="hasSpecialChar()">
+                <span class="rule-icon">
+                  {{ hasSpecialChar() ? "✓" : "✕" }}
+                </span>
+
+                <span>
+                  {{
+                    lang.lang() === "ar"
+                      ? "رمز خاص مثل @ # !"
+                      : "One special character like @ # !"
+                  }}
+                </span>
+              </div>
+
+            </div>
+          }
+        </label>
+
+        <!-- Confirm password -->
+
+        <label class="field">
+          <span class="text-label">
+            {{ "auth.confirmPassword" | t }}
+          </span>
+
+          <div class="password-input">
+            <input
+              [type]="showConfirmPassword ? 'text' : 'password'"
+              name="confirmPassword"
+              required
+              minlength="8"
+              [(ngModel)]="passwordForm.confirmPassword"
+              autocomplete="new-password"
+            />
+
+            <button
+              type="button"
+              class="password-toggle"
+              (click)="toggleConfirmPassword()"
+              [attr.aria-label]="
+                showConfirmPassword
+                  ? 'Hide password'
+                  : 'Show password'
+              "
+            >
+              @if (showConfirmPassword) {
+                <lucide-icon [img]="EyeOff"></lucide-icon>
+              } @else {
+                <lucide-icon [img]="Eye"></lucide-icon>
+              }
+            </button>
+          </div>
+
+          @if (
+            passwordForm.confirmPassword.length > 0 &&
+            !passwordsMatch()
+          ) {
+            <div class="field__error">
+              {{
+                lang.lang() === "ar"
+                  ? "كلمتا المرور غير متطابقتين"
+                  : "Passwords do not match"
+              }}
+            </div>
+          }
+
+          @if (passwordsMatch()) {
+            <div class="password-match">
+              <span class="rule-icon">✓</span>
+
+              <span>
+                {{
+                  lang.lang() === "ar"
+                    ? "كلمتا المرور متطابقتان"
+                    : "Passwords match"
+                }}
+              </span>
+            </div>
+          }
+        </label>
+
+        <button
+          type="submit"
+          class="btn btn-primary account-submit"
+          [disabled]="
+            savingPassword() ||
+            !isPasswordFormValid()
+          "
+        >
+          {{
+            savingPassword()
+              ? ("common.loading" | t)
+              : ("common.save" | t)
+          }}
+        </button>
+      </form>
+    </section>
+  }
+</div>

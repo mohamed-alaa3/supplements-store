@@ -1,0 +1,588 @@
+.account-page {
+  max-width: 760px;
+  padding-block: clamp(2rem, 5vw, 4rem);
+}
+
+/* =========================
+   Header
+========================= */
+
+.account-header {
+  margin-block-end: var(--space-lg);
+}
+
+.account-eyebrow {
+  margin: 0 0 0.35rem;
+  color: var(--color-volt);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.account-page h1 {
+  margin: 0;
+}
+
+.account-subtitle {
+  margin-block-start: 0.55rem;
+  max-width: 560px;
+}
+
+/* =========================
+   Tabs
+========================= */
+
+.account-tabs {
+  display: flex;
+  gap: 0.25rem;
+  margin-block-end: var(--space-lg);
+  padding: 0.25rem;
+
+  overflow-x: auto;
+
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+
+  background: var(--color-surface-raised);
+
+  scrollbar-width: none;
+}
+
+.account-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.account-tabs button {
+  position: relative;
+
+  flex: 1 0 auto;
+
+  min-height: 44px;
+  padding: 0.65rem 1rem;
+
+  border: 0;
+  border-radius: calc(var(--radius-lg) - 4px);
+
+  background: transparent;
+  color: var(--color-on-surface-muted);
+
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    color var(--dur-fast),
+    background-color var(--dur-fast),
+    transform var(--dur-fast);
+}
+
+.account-tabs button:hover {
+  color: var(--color-on-surface);
+}
+
+.account-tabs button:active {
+  transform: scale(0.98);
+}
+
+.account-tabs button.is-active {
+  color: var(--color-ink);
+  background: var(--color-volt);
+}
+
+:root[data-theme="dark"] .account-tabs button.is-active {
+  color: var(--color-ink);
+}
+
+/* =========================
+   Section
+========================= */
+
+.account-section {
+  position: relative;
+
+  padding: clamp(1.15rem, 3vw, 1.75rem);
+
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+
+  background:
+    radial-gradient(circle at 100% 0%,
+      color-mix(in srgb, var(--color-volt) 7%, transparent),
+      transparent 32%),
+    var(--color-surface-raised);
+
+  box-shadow: var(--shadow-card);
+}
+
+.section-heading {
+  margin-block-end: var(--space-md);
+}
+
+.section-heading h2,
+.section-heading h3 {
+  margin: 0;
+  color: var(--color-on-surface);
+  font-weight: 800;
+}
+
+.section-heading h2 {
+  font-size: clamp(1.1rem, 2vw, 1.35rem);
+}
+
+.section-heading h3 {
+  font-size: 1rem;
+}
+
+.section-heading p {
+  margin: 0.4rem 0 0;
+  color: var(--color-on-surface-muted);
+  font-size: 0.88rem;
+  line-height: 1.6;
+}
+
+.section-heading--small {
+  margin-block-end: var(--space-sm);
+}
+
+/* =========================
+   Forms
+========================= */
+
+.account-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+
+  width: 100%;
+  max-width: 500px;
+}
+
+.account-form__row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-sm);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.text-label {
+  color: var(--color-on-surface);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.field input,
+.field select,
+.account-form>input {
+  width: 100%;
+  min-height: 46px;
+
+  padding: 0.72rem 0.9rem;
+
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+
+  background: var(--color-surface);
+
+  color: var(--color-on-surface);
+
+  font: inherit;
+  font-size: 0.92rem;
+
+  outline: none;
+
+  transition:
+    border-color var(--dur-fast),
+    box-shadow var(--dur-fast),
+    background-color var(--dur-fast);
+}
+
+.field input:hover,
+.field select:hover,
+.account-form>input:hover {
+  border-color: color-mix(in srgb,
+      var(--color-border) 65%,
+      var(--color-volt));
+}
+
+.field input:focus,
+.field select:focus,
+.account-form>input:focus {
+  border-color: var(--color-volt);
+
+  box-shadow:
+    0 0 0 3px color-mix(in srgb,
+      var(--color-volt) 14%,
+      transparent);
+}
+
+.field input::placeholder,
+.account-form>input::placeholder {
+  color: var(--color-on-surface-muted);
+}
+
+/* =========================
+   Password
+========================= */
+
+.password-form {
+  max-width: 500px;
+}
+
+.password-input {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-input input {
+  padding-inline-end: 3.2rem;
+}
+
+.password-toggle {
+  position: absolute;
+
+  inset-inline-end: 0.55rem;
+  top: 50%;
+
+  width: 2.25rem;
+  height: 2.25rem;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  border: 0;
+  border-radius: var(--radius-sm);
+
+  background: transparent;
+  color: var(--color-on-surface-muted);
+
+  cursor: pointer;
+
+  transform: translateY(-50%);
+
+  transition:
+    color var(--dur-fast),
+    background-color var(--dur-fast),
+    transform var(--dur-fast);
+}
+
+.password-toggle:hover {
+  color: var(--color-volt);
+
+  background: color-mix(in srgb,
+      var(--color-volt) 9%,
+      transparent);
+}
+
+.password-toggle:active {
+  transform: translateY(-50%) scale(0.92);
+}
+
+.password-toggle lucide-icon {
+  display: flex;
+}
+
+.password-toggle svg {
+  width: 19px;
+  height: 19px;
+}
+
+/* =========================
+   Password rules
+========================= */
+
+.password-rules {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+
+  margin-block-start: 0.2rem;
+  padding: 0.7rem 0.8rem;
+
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+
+  background: var(--color-surface);
+
+  font-size: 0.79rem;
+}
+
+.password-rules>div {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+
+  color: var(--color-on-surface-muted);
+
+  transition:
+    color var(--dur-fast),
+    transform var(--dur-fast);
+}
+
+.password-rules>div.valid {
+  color: var(--color-volt);
+
+  transform: translateX(2px);
+}
+
+.rule-icon {
+  width: 18px;
+  height: 18px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  flex: 0 0 18px;
+
+  border-radius: 50%;
+
+  font-size: 0.7rem;
+  font-weight: 900;
+
+  color: var(--color-on-surface-muted);
+}
+
+.password-rules>div.valid .rule-icon {
+  color: var(--color-volt);
+}
+
+/* =========================
+   Confirm password
+========================= */
+
+.field__error {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+
+  margin-block-start: 0.1rem;
+
+  color: var(--color-danger);
+  font-size: var(--fs-meta);
+}
+
+.password-match {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+
+  margin-block-start: 0.1rem;
+
+  color: var(--color-volt);
+  font-size: var(--fs-meta);
+  font-weight: 600;
+}
+
+.password-match .rule-icon {
+  color: var(--color-volt);
+}
+
+/* =========================
+   Buttons
+========================= */
+
+.account-submit {
+  width: 100%;
+  margin-block-start: 0.25rem;
+}
+
+.account-submit:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* =========================
+   Addresses
+========================= */
+
+.account-addresses {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.address-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: var(--space-md);
+
+  padding: 1rem 1.1rem;
+
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+
+  background: var(--color-surface);
+
+  transition:
+    border-color var(--dur-fast),
+    transform var(--dur-fast),
+    box-shadow var(--dur-fast);
+}
+
+.address-card:hover {
+  border-color: color-mix(in srgb,
+      var(--color-border) 55%,
+      var(--color-volt));
+
+  transform: translateY(-1px);
+
+  box-shadow: var(--shadow-card);
+}
+
+.address-card.is-default {
+  border-color: var(--color-volt);
+
+  box-shadow:
+    0 0 0 1px color-mix(in srgb,
+      var(--color-volt) 15%,
+      transparent);
+}
+
+.address-card__content {
+  min-width: 0;
+}
+
+.address-card__name {
+  margin: 0;
+
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+
+  gap: 0.5rem;
+
+  color: var(--color-on-surface);
+  font-weight: 750;
+}
+
+.address-card__details {
+  margin: 0.35rem 0 0;
+
+  font-size: 0.82rem;
+  line-height: 1.6;
+}
+
+.address-separator {
+  margin-inline: 0.2rem;
+}
+
+.address-card__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+
+  flex-shrink: 0;
+}
+
+.address-remove:hover {
+  color: var(--color-danger);
+}
+
+.add-address-btn {
+  width: 100%;
+  margin-block-start: 0.2rem;
+}
+
+.new-address-card {
+  padding: 1rem;
+
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-lg);
+
+  background: var(--color-surface);
+}
+
+.new-address-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  margin-block-start: 0.25rem;
+}
+
+/* =========================
+   Dark mode
+========================= */
+
+:root[data-theme="dark"] .account-section {
+  background:
+    radial-gradient(circle at 100% 0%,
+      color-mix(in srgb, var(--color-volt) 8%, transparent),
+      transparent 34%),
+    var(--color-surface-raised);
+}
+
+/* =========================
+   Responsive
+========================= */
+
+@media (max-width: 640px) {
+  .account-page {
+    padding-block: var(--space-md);
+  }
+
+  .account-section {
+    padding: 1rem;
+  }
+
+  .account-tabs {
+    margin-inline: -0.25rem;
+  }
+
+  .account-tabs button {
+    padding-inline: 0.8rem;
+    font-size: 0.82rem;
+  }
+
+  .account-form__row {
+    grid-template-columns: 1fr;
+  }
+
+  .address-card {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .address-card__actions {
+    width: 100%;
+  }
+
+  .address-card__actions .btn {
+    flex: 1;
+  }
+
+  .new-address-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .new-address-actions .btn {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+  .account-tabs button,
+  .field input,
+  .field select,
+  .password-toggle,
+  .password-rules>div,
+  .address-card {
+    transition: none;
+  }
+}

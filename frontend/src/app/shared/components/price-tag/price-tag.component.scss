@@ -1,0 +1,6 @@
+.price-tag { display: inline-flex; align-items: baseline; gap: var(--space-2xs); }
+.price-tag__current { font-weight: 700; font-variant-numeric: tabular-nums; }
+.price-tag__compare { color: var(--color-on-surface-muted); text-decoration: line-through; font-size: 0.85em; }
+.price-tag--sm .price-tag__current { font-size: var(--fs-body); }
+.price-tag--md .price-tag__current { font-size: var(--fs-price); }
+.price-tag--lg .price-tag__current { font-size: var(--fs-h3); }

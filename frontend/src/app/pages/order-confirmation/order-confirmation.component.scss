@@ -1,0 +1,8 @@
+.confirm-page { padding-block: var(--space-xl); min-height: 60vh; display: flex; align-items: center; justify-content: center; }
+.confirm-card { max-width: 480px; width: 100%; text-align: center; display: flex; flex-direction: column; align-items: center; gap: var(--space-sm); }
+.confirm-card__check { margin-block-end: var(--space-xs); }
+.confirm-card__number { font-weight: 700; }
+.confirm-card__summary { width: 100%; background: var(--color-surface-raised); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: var(--space-md); display: flex; flex-direction: column; gap: var(--space-2xs); margin-block: var(--space-sm); }
+.confirm-card__row { display: flex; justify-content: space-between; font-size: 0.9rem; }
+.confirm-card__row--total { font-weight: 700; font-size: 1.1rem; padding-block-start: var(--space-2xs); border-block-start: 1px solid var(--color-border); }
+.confirm-card__actions { display: flex; gap: var(--space-xs); }

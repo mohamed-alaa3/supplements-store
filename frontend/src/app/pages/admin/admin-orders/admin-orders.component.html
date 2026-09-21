@@ -1,0 +1,380 @@
+<div class="container admin-page">
+
+  <!-- Header -->
+  <header class="admin-page__header">
+    <div>
+      <p class="admin-page__eyebrow">
+        {{ lang.pick("إدارة المتجر", "Store Management") }}
+      </p>
+
+      <h1 class="text-h1">
+        {{ lang.pick("الطلبات", "Orders") }}
+      </h1>
+
+      @if (!loading()) {
+        <p class="admin-page__count">
+          {{ totalItems }}
+          {{ lang.pick("طلب", "orders") }}
+        </p>
+      }
+    </div>
+  </header>
+
+  <!-- Filters -->
+  <section class="orders-toolbar">
+
+    <div class="orders-search">
+      <label for="order-search">
+        {{ lang.pick("البحث", "Search") }}
+      </label>
+
+      <div class="search-input">
+        <span class="search-input__icon">⌕</span>
+
+        <input
+          id="order-search"
+          type="search"
+          [(ngModel)]="search"
+          (keyup.enter)="onSearch()"
+[placeholder]="
+  lang.pick(
+    'ابحث باسم العميل أو رقم الهاتف أو رقم الطلب...',
+    'Search by customer name, phone, or order number...'
+  )
+"
+        />
+
+        @if (search) {
+          <button
+            type="button"
+            class="search-input__clear"
+            (click)="search = ''; onSearch()"
+            aria-label="Clear search"
+          >
+            ×
+          </button>
+        }
+      </div>
+    </div>
+
+    <div class="orders-filter">
+      <label for="status-filter">
+        {{ lang.pick("الحالة", "Status") }}
+      </label>
+
+      <select
+        id="status-filter"
+        [(ngModel)]="status"
+        (ngModelChange)="onFilterChange()"
+      >
+        <option value="all">
+          {{ lang.pick("كل الحالات", "All statuses") }}
+        </option>
+
+        @for (s of orderStatuses; track s) {
+          <option [value]="s">
+            {{ getStatusLabel(s) }}
+          </option>
+        }
+      </select>
+    </div>
+
+    <div class="orders-filter">
+      <label for="sort-filter">
+        {{ lang.pick("ترتيب", "Sort") }}
+      </label>
+
+      <select
+        id="sort-filter"
+        [(ngModel)]="sort"
+        (ngModelChange)="onFilterChange()"
+      >
+        <option value="newest">
+          {{ lang.pick("الأحدث أولًا", "Newest first") }}
+        </option>
+
+        <option value="oldest">
+          {{ lang.pick("الأقدم أولًا", "Oldest first") }}
+        </option>
+
+        <option value="total_desc">
+          {{ lang.pick("الإجمالي: الأعلى", "Total: High to Low") }}
+        </option>
+
+        <option value="total_asc">
+          {{ lang.pick("الإجمالي: الأقل", "Total: Low to High") }}
+        </option>
+      </select>
+    </div>
+
+    <button
+      type="button"
+      class="btn btn-primary orders-search-button"
+      (click)="onSearch()"
+    >
+      {{ lang.pick("بحث", "Search") }}
+    </button>
+
+    @if (search || status !== "all" || sort !== "newest") {
+      <button
+        type="button"
+        class="btn btn-outline orders-clear-button"
+        (click)="clearFilters()"
+      >
+        {{ lang.pick("مسح الفلاتر", "Clear filters") }}
+      </button>
+    }
+
+  </section>
+
+  <!-- Loading -->
+  @if (loading()) {
+
+    <div class="orders-loading">
+      <app-loading-skeleton
+        variant="block"
+        height="120px"
+        [count]="6"
+      ></app-loading-skeleton>
+    </div>
+
+  } @else if (error()) {
+
+    <!-- Error -->
+    <section class="orders-state">
+      <div class="orders-state__icon">!</div>
+
+      <h2>
+        {{ lang.pick(
+          "تعذر تحميل الطلبات",
+          "Unable to load orders"
+        ) }}
+      </h2>
+
+      <p>
+        {{ lang.pick(
+          "حدث خطأ أثناء تحميل بيانات الطلبات.",
+          "Something went wrong while loading the orders."
+        ) }}
+      </p>
+
+      <button
+        type="button"
+        class="btn btn-primary"
+        (click)="load()"
+      >
+        {{ lang.pick("إعادة المحاولة", "Try again") }}
+      </button>
+    </section>
+
+  } @else if (orders().length === 0) {
+
+    <!-- Empty -->
+    <section class="orders-empty">
+      <app-empty-state
+        [title]="
+          lang.pick(
+            'لا توجد طلبات',
+            'No orders found'
+          )
+        "
+        [body]="
+          lang.pick(
+            'لم نجد أي طلبات تطابق البحث أو الفلاتر الحالية.',
+            'No orders match the current search or filters.'
+          )
+        "
+      ></app-empty-state>
+
+      @if (search || status !== "all") {
+        <button
+          type="button"
+          class="btn btn-outline"
+          (click)="clearFilters()"
+        >
+          {{ lang.pick("مسح الفلاتر", "Clear filters") }}
+        </button>
+      }
+    </section>
+
+  } @else {
+
+    <!-- Orders -->
+    <section class="orders-list">
+
+      @for (o of orders(); track o._id) {
+
+        <article class="order-card">
+
+          <!-- Main -->
+          <div class="order-card__main">
+
+            <div class="order-card__top">
+
+              <span class="order-number ltr-token">
+                #{{ o.orderNumber }}
+              </span>
+
+              <span
+                class="status-badge"
+                [attr.data-status]="o.orderStatus"
+              >
+                {{ getStatusLabel(o.orderStatus) }}
+              </span>
+
+            </div>
+
+            <div class="customer">
+
+              <div class="customer__avatar">
+                {{ getCustomerName(o).charAt(0) }}
+              </div>
+
+              <div>
+                <strong>
+                  {{ getCustomerName(o) }}
+                </strong>
+
+                @if (getCustomerLocation(o)) {
+                  <span>
+                    {{ getCustomerLocation(o) }}
+                  </span>
+                }
+
+                <span class="customer__phone ltr-token">
+                  {{ o.shippingAddress.phone }}
+                </span>
+              </div>
+
+            </div>
+
+          </div>
+
+          <!-- Details -->
+          <div class="order-card__details">
+
+            <div class="detail">
+              <span class="detail__label">
+                {{ lang.pick("المنتجات", "Items") }}
+              </span>
+
+              <strong>
+                {{ getItemCount(o) }}
+              </strong>
+            </div>
+
+            <div class="detail">
+              <span class="detail__label">
+                {{ lang.pick("الدفع", "Payment") }}
+              </span>
+
+              <span
+                class="payment-badge"
+                [attr.data-payment]="o.paymentStatus"
+              >
+                {{ getPaymentStatusLabel(o.paymentStatus) }}
+              </span>
+            </div>
+
+            <div class="detail">
+              <span class="detail__label">
+                {{ lang.pick("التاريخ", "Date") }}
+              </span>
+
+              <span class="ltr-token">
+                {{ o.createdAt | date: "dd/MM/yyyy" }}
+              </span>
+            </div>
+
+          </div>
+
+          <!-- Total -->
+          <div class="order-card__total">
+
+            <span>
+              {{ lang.pick("الإجمالي", "Total") }}
+            </span>
+
+            <strong class="ltr-token">
+              {{ o.total | number: "1.0-0" }}
+              {{ o.currency || "EGP" }}
+            </strong>
+
+          </div>
+
+          <!-- Status Action -->
+          <div class="order-card__action">
+
+            <label>
+              {{ lang.pick("تغيير الحالة", "Change status") }}
+            </label>
+
+            <select
+              [ngModel]="o.orderStatus"
+              (ngModelChange)="updateStatus(o, $event)"
+            >
+              @for (s of orderStatuses; track s) {
+                <option [value]="s">
+                  {{ getStatusLabel(s) }}
+                </option>
+              }
+            </select>
+
+          </div>
+
+        </article>
+
+      }
+
+    </section>
+
+    <!-- Pagination -->
+    @if (totalPages > 1) {
+
+      <nav
+        class="pagination"
+        aria-label="Orders pagination"
+      >
+
+        <button
+          type="button"
+          class="pagination__button"
+          [disabled]="page === 1"
+          (click)="previousPage()"
+        >
+          {{ lang.pick("السابق", "Previous") }}
+        </button>
+
+        <div class="pagination__pages">
+
+          @for (pageNumber of visiblePages; track pageNumber) {
+
+            <button
+              type="button"
+              class="pagination__page"
+              [class.is-active]="pageNumber === page"
+              (click)="goToPage(pageNumber)"
+            >
+              {{ pageNumber }}
+            </button>
+
+          }
+
+        </div>
+
+        <button
+          type="button"
+          class="pagination__button"
+          [disabled]="page === totalPages"
+          (click)="nextPage()"
+        >
+          {{ lang.pick("التالي", "Next") }}
+        </button>
+
+      </nav>
+
+    }
+
+  }
+
+</div>

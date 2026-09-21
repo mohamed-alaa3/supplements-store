@@ -1,0 +1,5 @@
+<div class="qty" [class.qty--disabled]="disabled">
+  <button type="button" class="qty__btn" (click)="decrement()" [disabled]="disabled || value <= min" aria-label="Decrease quantity">−</button>
+  <input class="qty__input" type="text" inputmode="numeric" [value]="value" (change)="onInput($any($event.target).value)" [disabled]="disabled" aria-label="Quantity" />
+  <button type="button" class="qty__btn" (click)="increment()" [disabled]="disabled || value >= max" aria-label="Increase quantity">+</button>
+</div>

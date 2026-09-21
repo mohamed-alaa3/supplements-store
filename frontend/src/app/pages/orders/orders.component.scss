@@ -1,0 +1,17 @@
+.orders-page { padding-block: var(--space-lg); }
+.orders-page h1 { margin-block-end: var(--space-md); }
+.orders-list { display: flex; flex-direction: column; gap: var(--space-sm); }
+.order-row {
+  display: grid; grid-template-columns: 1fr auto auto auto; align-items: center; gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  background: var(--color-surface-raised); border: 1px solid var(--color-border); border-radius: var(--radius-lg);
+}
+.order-row__number { font-weight: 700; }
+.order-row__total { font-weight: 600; }
+@media (max-width: 640px) { .order-row { grid-template-columns: 1fr; justify-items: start; } }
+
+.status-badge { padding: 0.3rem 0.7rem; border-radius: var(--radius-pill); font-size: var(--fs-meta); font-weight: 700; text-transform: capitalize; background: var(--color-surface-sunken); }
+.status-badge--pending, .status-badge--confirmed { color: var(--color-warning); }
+.status-badge--processing, .status-badge--shipped { color: var(--color-focus-ring); }
+.status-badge--delivered { color: var(--color-success); }
+.status-badge--cancelled, .status-badge--returned { color: var(--color-danger); }

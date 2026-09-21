@@ -1,0 +1,90 @@
+<div class="container builder-page">
+  <h1 class="text-h1">{{ 'nav.bundleBuilder' | t }}</h1>
+
+  @switch (state()) {
+    @case ('loading') { <app-loading-skeleton variant="block" height="320px"></app-loading-skeleton> }
+    @case ('error') { <app-empty-state kind="error" [title]="'common.errorTitle' | t" [body]="'common.errorBody' | t"></app-empty-state> }
+    @case ('empty') {
+      <app-empty-state [title]="'common.noResultsTitle' | t" [body]="''">
+        <a routerLink="/bundles" class="btn btn-outline">{{ 'nav.bundles' | t }}</a>
+      </app-empty-state>
+    }
+    @case ('success') {
+      <div class="builder-tabs">
+        @for (bundle of bundles(); track bundle._id) {
+          <button type="button" class="builder-tab" [class.is-active]="selectedBundle()?._id === bundle._id" (click)="selectBundle(bundle)">
+            {{ bundleName(bundle) }}
+          </button>
+        }
+      </div>
+
+      @if (selectedBundle(); as bundle) {
+        <div class="builder-grid">
+          <div class="builder-options">
+            @if (bundle.minItems || bundle.maxItems) {
+              <p class="text-muted text-meta">
+                {{ lang.lang() === 'ar' ? 'اختر' : 'Choose' }}
+                {{ bundle.minItems }}@if (bundle.maxItems) { – {{ bundle.maxItems }} }
+                {{ lang.lang() === 'ar' ? 'عناصر' : 'items' }}
+              </p>
+            }
+
+            @for (rule of bundle.items; track rule.variant) {
+              <div class="builder-option">
+                @if (displayVariants().get(rule.variant); as info) {
+                  <div class="builder-option__info">
+                    <p class="builder-option__name">{{ info.productName }}</p>
+                    <p class="text-muted text-meta">{{ info.variant.flavor }}{{ info.variant.sizeLabel ? ' · ' + info.variant.sizeLabel : '' }}</p>
+                  </div>
+                } @else {
+                  <div class="builder-option__info">
+                    <p class="text-muted text-meta ltr-token">{{ rule.variant }}</p>
+                  </div>
+                }
+                <app-quantity-selector
+                  [value]="quantities()[rule.variant] || 0"
+                  [min]="rule.minQuantity || 0"
+                  [max]="rule.maxQuantity || 10"
+                  (valueChange)="setQuantity(rule.variant, $event)">
+                </app-quantity-selector>
+              </div>
+            }
+          </div>
+
+          <aside class="builder-summary">
+            <p class="text-h3">{{ 'checkout.reviewOrder' | t }}</p>
+@if (quoting()) {
+  <app-loading-skeleton variant="line" [count]="3"></app-loading-skeleton>
+} @else {
+  @if (quote(); as q) {
+    <div class="builder-summary__row">
+      <span>{{ 'common.subtotal' | t }}</span>
+      <span class="ltr-token">{{ q.subtotal | number: '1.0-0' }} EGP</span>
+    </div>
+
+    @if (q.discountTotal > 0) {
+      <div class="builder-summary__row">
+        <span>{{ 'common.discount' | t }}</span>
+        <span class="ltr-token">-{{ q.discountTotal | number: '1.0-0' }} EGP</span>
+      </div>
+    }
+
+    <div class="builder-summary__row builder-summary__row--total">
+      <span>{{ 'common.total' | t }}</span>
+      <span class="ltr-token">{{ q.total | number: '1.0-0' }} EGP</span>
+    </div>
+  } @else {
+    <p class="text-muted">
+      {{ lang.lang() === 'ar' ? 'اختر عناصر لرؤية السعر' : 'Pick items to see the price' }}
+    </p>
+  }
+}
+            <button type="button" class="btn btn-primary builder-summary__submit" [disabled]="!quote() || addingToCart()" (click)="addToCart()">
+              {{ addingToCart() ? ('common.loading' | t) : ('common.addToCart' | t) }}
+            </button>
+          </aside>
+        </div>
+      }
+    }
+  }
+</div>

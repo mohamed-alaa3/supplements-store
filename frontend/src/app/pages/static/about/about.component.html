@@ -1,0 +1,12 @@
+<div class="container static-page">
+  <h1 class="text-h1" appReveal>{{ 'nav.about' | t }}</h1>
+  <div class="static-page__content" appReveal [revealDelay]="0.1">
+    @if (lang.lang() === 'ar') {
+      <p>سوبليّنا هي علامة تجارية للمكملات الرياضية وُلدت من شغف بالأداء والتعافي. نعمل مع علامات موثوقة ومختبَرة معمليًا لنقدّم لك تركيبات حقيقية بدون مبالغات تسويقية.</p>
+      <p>فريقنا يراجع كل دفعة إنتاج، ونعمل مباشرة مع بائعين معتمدين على المنصة لضمان جودة وشفافية كل منتج تراه هنا.</p>
+    } @else {
+      <p>Supplena is a sports-nutrition brand born from a simple idea: give people formulas that actually work, backed by real testing — not marketing noise.</p>
+      <p>We work with vetted sellers and lab-tested brands across our platform, and every product listing goes through the same quality bar before it reaches your cart.</p>
+    }
+  </div>
+</div>

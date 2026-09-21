@@ -1,0 +1,671 @@
+<div class="auth-page">
+
+  <!-- Background glow -->
+  <div
+    class="auth-page__glow auth-page__glow--one"
+    aria-hidden="true"
+  ></div>
+
+  <div
+    class="auth-page__glow auth-page__glow--two"
+    aria-hidden="true"
+  ></div>
+
+
+  <div class="auth-page__content">
+
+    <!-- Card -->
+    <div
+      #card
+      class="auth-card"
+    >
+
+      <!-- Header -->
+      <div class="auth-card__header">
+
+        <div
+          class="auth-card__icon"
+          aria-hidden="true"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            width="28"
+            height="28"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path
+              d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"
+            />
+
+            <circle
+              cx="9"
+              cy="7"
+              r="4"
+            />
+
+            <path d="M19 8v6" />
+            <path d="M22 11h-6" />
+          </svg>
+        </div>
+
+        <h1 class="text-h1">
+          {{ "auth.registerTitle" | t }}
+        </h1>
+
+      </div>
+
+
+      <!-- Error -->
+      @if (formError()) {
+
+        <div
+          class="auth-error"
+          role="alert"
+        >
+
+          <span
+            class="auth-error__icon"
+            aria-hidden="true"
+          >
+            !
+          </span>
+
+          <span>
+            {{ formError() }}
+          </span>
+
+        </div>
+
+      }
+
+
+      <!-- Form -->
+      <form
+        #registerForm="ngForm"
+        class="auth-form"
+        (submit)="$event.preventDefault(); submit(registerForm)"
+        novalidate
+      >
+
+        <!-- Full Name -->
+        <label class="field">
+
+          <span class="text-label">
+            {{ "auth.fullName" | t }}
+          </span>
+
+          <div class="field__input">
+
+            <svg
+              class="field__icon"
+              viewBox="0 0 24 24"
+              width="19"
+              height="19"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <circle
+                cx="12"
+                cy="8"
+                r="4"
+              />
+
+              <path
+                d="M4 21a8 8 0 0 1 16 0"
+              />
+            </svg>
+
+            <input
+              type="text"
+              name="fullName"
+              required
+              [(ngModel)]="fullName"
+              #fullNameField="ngModel"
+              autocomplete="name"
+              [placeholder]="
+                lang.lang() === 'ar'
+                  ? 'أدخل اسمك بالكامل'
+                  : 'Enter your full name'
+              "
+            />
+
+          </div>
+
+          @if (
+            fullNameField.invalid &&
+            fullNameField.touched
+          ) {
+
+            <span class="field__error">
+              {{
+                lang.lang() === "ar"
+                  ? "من فضلك أدخل اسمك"
+                  : "Please enter your name"
+              }}
+            </span>
+
+          }
+
+        </label>
+
+
+        <!-- Email -->
+        <label class="field">
+
+          <span class="text-label">
+            {{ "auth.email" | t }}
+          </span>
+
+          <div class="field__input">
+
+            <svg
+              class="field__icon"
+              viewBox="0 0 24 24"
+              width="19"
+              height="19"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <rect
+                x="3"
+                y="5"
+                width="18"
+                height="14"
+                rx="2"
+              />
+
+              <path d="m3 7 9 6 9-6" />
+            </svg>
+
+            <input
+              type="email"
+              name="email"
+              required
+              email
+              [(ngModel)]="email"
+              #emailField="ngModel"
+              autocomplete="email"
+              [placeholder]="
+                lang.lang() === 'ar'
+                  ? 'أدخل بريدك الإلكتروني'
+                  : 'Enter your email address'
+              "
+            />
+
+          </div>
+
+          @if (
+            emailField.invalid &&
+            emailField.touched
+          ) {
+
+            <span class="field__error">
+              {{
+                lang.lang() === "ar"
+                  ? "من فضلك أدخل بريدًا إلكترونيًا صحيحًا"
+                  : "Please enter a valid email address"
+              }}
+            </span>
+
+          }
+
+        </label>
+
+
+        <!-- Phone -->
+        <label class="field">
+
+          <span class="text-label">
+            {{ "auth.phone" | t }}
+          </span>
+
+          <div class="field__input">
+
+            <svg
+              class="field__icon"
+              viewBox="0 0 24 24"
+              width="19"
+              height="19"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path
+                d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.9.33 1.78.62 2.63a2 2 0 0 1-.45 2.11L8 9.73a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.85.29 1.73.5 2.63.62A2 2 0 0 1 22 16.92Z"
+              />
+            </svg>
+
+            <input
+              type="tel"
+              name="phone"
+              [(ngModel)]="phone"
+              autocomplete="tel"
+              [placeholder]="
+                lang.lang() === 'ar'
+                  ? 'رقم الهاتف (اختياري)'
+                  : 'Phone number (optional)'
+              "
+            />
+
+          </div>
+
+        </label>
+
+
+        <!-- Password -->
+        <label class="field">
+
+          <span class="text-label">
+            {{ "auth.password" | t }}
+          </span>
+
+          <div class="password-input">
+
+            <svg
+              class="field__icon"
+              viewBox="0 0 24 24"
+              width="19"
+              height="19"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <rect
+                x="3"
+                y="11"
+                width="18"
+                height="10"
+                rx="2"
+              />
+
+              <path
+                d="M7 11V7a5 5 0 0 1 10 0v4"
+              />
+            </svg>
+
+            <input
+              [type]="
+                showPassword
+                  ? 'text'
+                  : 'password'
+              "
+              name="password"
+              required
+              minlength="8"
+              [(ngModel)]="password"
+              autocomplete="new-password"
+              [placeholder]="
+                lang.lang() === 'ar'
+                  ? 'أنشئ كلمة مرور قوية'
+                  : 'Create a strong password'
+              "
+            />
+
+            <button
+              type="button"
+              class="password-toggle"
+              (click)="togglePasswordVisibility()"
+              [attr.aria-label]="
+                showPassword
+                  ? (
+                      lang.lang() === 'ar'
+                        ? 'إخفاء كلمة المرور'
+                        : 'Hide password'
+                    )
+                  : (
+                      lang.lang() === 'ar'
+                        ? 'إظهار كلمة المرور'
+                        : 'Show password'
+                    )
+              "
+            >
+
+              @if (showPassword) {
+
+                <lucide-icon
+                  [img]="EyeOff"
+                ></lucide-icon>
+
+              } @else {
+
+                <lucide-icon
+                  [img]="Eye"
+                ></lucide-icon>
+
+              }
+
+            </button>
+
+          </div>
+
+
+          <!-- Password rules -->
+          @if (password.length > 0) {
+
+            <div class="password-rules">
+
+              <!-- Length -->
+              <div
+                [class.valid]="hasMinLength()"
+              >
+                <span class="rule-icon">
+                  {{
+                    hasMinLength()
+                      ? "✓"
+                      : "✕"
+                  }}
+                </span>
+
+                <span>
+                  {{
+                    lang.lang() === "ar"
+                      ? "8 أحرف على الأقل"
+                      : "At least 8 characters"
+                  }}
+                </span>
+              </div>
+
+
+              <!-- Letter -->
+              <div
+                [class.valid]="hasLetter()"
+              >
+                <span class="rule-icon">
+                  {{
+                    hasLetter()
+                      ? "✓"
+                      : "✕"
+                  }}
+                </span>
+
+                <span>
+                  {{
+                    lang.lang() === "ar"
+                      ? "حرف واحد على الأقل"
+                      : "At least one letter"
+                  }}
+                </span>
+              </div>
+
+
+              <!-- Number -->
+              <div
+                [class.valid]="hasNumber()"
+              >
+                <span class="rule-icon">
+                  {{
+                    hasNumber()
+                      ? "✓"
+                      : "✕"
+                  }}
+                </span>
+
+                <span>
+                  {{
+                    lang.lang() === "ar"
+                      ? "رقم واحد على الأقل"
+                      : "At least one number"
+                  }}
+                </span>
+              </div>
+
+
+              <!-- Special -->
+              <div
+                [class.valid]="hasSpecialChar()"
+              >
+                <span class="rule-icon">
+                  {{
+                    hasSpecialChar()
+                      ? "✓"
+                      : "✕"
+                  }}
+                </span>
+
+                <span>
+                  {{
+                    lang.lang() === "ar"
+                      ? "رمز خاص مثل @ # !"
+                      : "One special character like @ # !"
+                  }}
+                </span>
+              </div>
+
+            </div>
+
+          }
+
+        </label>
+
+
+        <!-- Confirm Password -->
+        <label class="field">
+
+          <span class="text-label">
+            {{ "auth.confirmPassword" | t }}
+          </span>
+
+          <div class="password-input">
+
+            <svg
+              class="field__icon"
+              viewBox="0 0 24 24"
+              width="19"
+              height="19"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <rect
+                x="3"
+                y="11"
+                width="18"
+                height="10"
+                rx="2"
+              />
+
+              <path
+                d="M7 11V7a5 5 0 0 1 10 0v4"
+              />
+            </svg>
+
+            <input
+              [type]="
+                showConfirmPassword
+                  ? 'text'
+                  : 'password'
+              "
+              name="confirmPassword"
+              required
+              minlength="8"
+              [(ngModel)]="confirmPassword"
+              #confirmPasswordField="ngModel"
+              autocomplete="new-password"
+              [placeholder]="
+                lang.lang() === 'ar'
+                  ? 'أكد كلمة المرور'
+                  : 'Confirm your password'
+              "
+            />
+
+            <button
+              type="button"
+              class="password-toggle"
+              (click)="toggleConfirmPasswordVisibility()"
+              [attr.aria-label]="
+                showConfirmPassword
+                  ? (
+                      lang.lang() === 'ar'
+                        ? 'إخفاء كلمة المرور'
+                        : 'Hide password'
+                    )
+                  : (
+                      lang.lang() === 'ar'
+                        ? 'إظهار كلمة المرور'
+                        : 'Show password'
+                    )
+              "
+            >
+
+              @if (showConfirmPassword) {
+
+                <lucide-icon
+                  [img]="EyeOff"
+                ></lucide-icon>
+
+              } @else {
+
+                <lucide-icon
+                  [img]="Eye"
+                ></lucide-icon>
+
+              }
+
+            </button>
+
+          </div>
+
+
+          @if (
+            confirmPasswordField.touched &&
+            !confirmPassword
+          ) {
+
+            <span class="field__error">
+              {{
+                lang.lang() === "ar"
+                  ? "من فضلك أكد كلمة المرور"
+                  : "Please confirm your password"
+              }}
+            </span>
+
+          }
+
+
+          @if (
+            confirmPassword &&
+            password !== confirmPassword
+          ) {
+
+            <span class="field__error">
+              {{
+                lang.lang() === "ar"
+                  ? "كلمتا المرور غير متطابقتين"
+                  : "Passwords do not match"
+              }}
+            </span>
+
+          }
+
+        </label>
+
+
+        <!-- Submit -->
+        <button
+          type="submit"
+          class="btn btn-primary auth-submit"
+          [disabled]="
+            submitting() ||
+            !isPasswordStrong() ||
+            !passwordsMatch()
+          "
+        >
+
+          @if (submitting()) {
+
+            <span
+              class="auth-spinner"
+              aria-hidden="true"
+            ></span>
+
+            <span>
+              {{ "common.loading" | t }}
+            </span>
+
+          } @else {
+
+            <span>
+              {{ "auth.registerCta" | t }}
+            </span>
+
+            <svg
+              viewBox="0 0 24 24"
+              width="18"
+              height="18"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M5 12h14" />
+              <path d="m13 6 6 6-6 6" />
+            </svg>
+
+          }
+
+        </button>
+
+      </form>
+
+
+      <!-- Divider -->
+      <div class="auth-divider">
+        <span>
+          {{ lang.lang() === "ar" ? "أو" : "OR" }}
+        </span>
+      </div>
+
+
+      <!-- Login -->
+      <p class="auth-switch text-muted">
+
+        <span>
+          {{ "auth.haveAccount" | t }}
+        </span>
+
+        <a routerLink="/login">
+          {{ "auth.signIn" | t }}
+        </a>
+
+      </p>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- Verification -->
+@if (showVerificationModal()) {
+
+  <app-email-verification-modal
+    [email]="registeredEmail()"
+    (verified)="onVerified()"
+    (closed)="onVerificationClosed()"
+  />
+
+}

@@ -1,0 +1,36 @@
+<div class="container wishlist-page">
+  <h1 class="text-h1">{{ 'nav.wishlist' | t }}</h1>
+
+  @switch (state()) {
+    @case ('loading') { <app-loading-skeleton variant="card" [count]="4"></app-loading-skeleton> }
+    @case ('error') {
+      <app-empty-state kind="error" [title]="'common.errorTitle' | t" [body]="'common.errorBody' | t"></app-empty-state>
+    }
+    @case ('success') {
+      @if ((wishlist.wishlist()?.items?.length ?? 0) === 0) {
+        <app-empty-state [title]="'common.noResultsTitle' | t" [body]="'common.noResultsBody' | t">
+          <a routerLink="/shop" class="btn btn-primary">{{ 'nav.shop' | t }}</a>
+        </app-empty-state>
+      } @else {
+        <div class="wishlist-grid">
+          @for (item of wishlist.wishlist()?.items; track item._id) {
+            <div class="wishlist-card" appReveal>
+              <a [routerLink]="['/products', item.product]" class="wishlist-card__media">
+                @if (item.imageUrl) { <img [src]="item.imageUrl | mediaUrl" [alt]="lang.pick(item.productNameAr, item.productNameEn)" loading="lazy" /> }
+              </a>
+              <div class="wishlist-card__body">
+                <a [routerLink]="['/products', item.product]" class="wishlist-card__name">{{ lang.pick(item.productNameAr, item.productNameEn) }}</a>
+                @if (item.price) { <span class="ltr-token text-price">{{ item.price | number: '1.0-0' }} EGP</span> }
+                @if (item.stockState) { <app-stock-badge [state]="item.stockState"></app-stock-badge> }
+                <div class="wishlist-card__actions">
+                  <button type="button" class="btn btn-primary btn-sm" (click)="moveToCart(item.product, item.variant, item._id)">{{ 'common.addToCart' | t }}</button>
+                  <button type="button" class="btn btn-ghost btn-sm" (click)="remove(item._id)">{{ 'common.remove' | t }}</button>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    }
+  }
+</div>
