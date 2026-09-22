@@ -25,6 +25,31 @@ const ORDER_STATUSES = [
 
 const TERMINAL_STATUSES = ["cancelled", "returned"];
 
+const COD_PAYMENT_METHOD = "cash_on_delivery";
+
+/**
+ * Server-side business rule (source of truth — never trust the client
+ * for this): the project currently supports Cash on Delivery only, so
+ * a COD order is only actually collected once it has been physically
+ * delivered to the customer.
+ *
+ * - COD + orderStatus -> "delivered"  => paymentStatus becomes "paid"
+ * - COD + any other orderStatus       => paymentStatus is left alone
+ *   (it stays "pending"/"unpaid" until delivery, and this function
+ *   never turns a "failed"/"refunded" status back into "paid")
+ *
+ * Mutates `order` in place; caller is responsible for persisting it.
+ */
+function applyCodPaymentRule(order, newOrderStatus) {
+  if (order.paymentMethod !== COD_PAYMENT_METHOD) {
+    return;
+  }
+
+  if (newOrderStatus === "delivered" && order.paymentStatus === "pending") {
+    order.paymentStatus = "paid";
+  }
+}
+
 /**
  * Restocks an order and changes its status inside ONE transaction.
  *
@@ -57,6 +82,8 @@ async function changeStatusWithRestock(orderId, newStatus, extra = {}) {
       const becomesTerminal = TERMINAL_STATUSES.includes(newStatus);
 
       order.orderStatus = newStatus;
+
+      applyCodPaymentRule(order, newStatus);
 
       if (extra.cancelReason !== undefined) {
         order.cancelReason = extra.cancelReason;
@@ -357,6 +384,8 @@ const sellerUpdateStatus = asyncHandler(async (req, res) => {
   }
 
   order.orderStatus = status;
+
+  applyCodPaymentRule(order, status);
 
   await order.save();
 

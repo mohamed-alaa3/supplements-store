@@ -2,7 +2,8 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { combineLatest } from 'rxjs';
+import { Subject, combineLatest, of } from 'rxjs';
+import { catchError, debounceTime, switchMap } from 'rxjs/operators';
 
 import { Brand, Category, PaginationMeta, ProductListItem, ProductQueryParams } from '../../core/models';
 import { ProductService } from '../../core/services/product.service';
@@ -44,6 +45,19 @@ export class ShopComponent implements OnInit {
   minPriceInput?: number;
   maxPriceInput?: number;
 
+  /**
+   * Every filter/sort/page change pushes here instead of calling the
+   * HTTP client directly. debounceTime collapses several rapid taps
+   * (e.g. ticking category + brand + in-stock one after another on
+   * mobile) into a single outgoing request, and switchMap cancels any
+   * still-pending request when a newer one is triggered — so a slow
+   * response for a filter state the user has already changed can never
+   * land after, and overwrite, a newer/faster one. This is what was
+   * previously causing duplicate/racing API calls (and contributing to
+   * 429s) when filters were changed quickly on mobile.
+   */
+  private readonly fetch$ = new Subject<void>();
+
   constructor(
     private productService: ProductService,
     private categoryService: CategoryService,
@@ -57,6 +71,21 @@ export class ShopComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.fetch$
+      .pipe(
+        debounceTime(120),
+        switchMap(() => this.productService.list(this.query).pipe(catchError(() => of(null))))
+      )
+      .subscribe((res) => {
+        if (!res) {
+          this.state.set('error');
+          return;
+        }
+        this.products.set(res.data);
+        this.meta.set(res.meta ?? null);
+        this.state.set(res.data.length ? 'success' : 'empty');
+      });
+
     this.categoryService.list().subscribe((res) => this.categories.set(this.flattenCategories(res.data)));
     this.brandService.list().subscribe((res) => this.brands.set(res.data));
 
@@ -89,14 +118,7 @@ export class ShopComponent implements OnInit {
 
   fetch(): void {
     this.state.set('loading');
-    this.productService.list(this.query).subscribe({
-      next: (res) => {
-        this.products.set(res.data);
-        this.meta.set(res.meta ?? null);
-        this.state.set(res.data.length ? 'success' : 'empty');
-      },
-      error: () => this.state.set('error')
-    });
+    this.fetch$.next();
   }
 
   applyFilters(): void {
