@@ -1,3 +1,4 @@
+
 const env = require('./config/env');
 const connectDB = require('./config/db');
 const app = require('./app');
@@ -10,12 +11,15 @@ const app = require('./app');
 async function start() {
   try {
     await connectDB();
+
     // eslint-disable-next-line no-console
     console.log('[mongo] connected');
 
-    const server = app.listen(env.port, () => {
+    const server = app.listen(env.port, '0.0.0.0', () => {
       // eslint-disable-next-line no-console
-      console.log(`[server] listening on port ${env.port} (${env.nodeEnv})`);
+      console.log(
+        `[server] listening on 0.0.0.0:${env.port} (${env.nodeEnv})`
+      );
     });
 
     process.on('unhandledRejection', (err) => {
@@ -25,9 +29,13 @@ async function start() {
     });
   } catch (err) {
     // eslint-disable-next-line no-console
-    console.error('[startup] failed to connect to MongoDB:', err.message);
+    console.error(
+      '[startup] failed to connect to MongoDB:',
+      err.message
+    );
     process.exit(1);
   }
 }
 
 start();
+

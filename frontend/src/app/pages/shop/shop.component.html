@@ -2,9 +2,13 @@
   <div class="shop__header">
     <h1 class="text-h1">{{ 'shop.title' | t }}</h1>
     <div class="shop__header-actions">
-      <button type="button" class="btn btn-outline shop__filter-toggle" (click)="isFilterPanelOpen.set(!isFilterPanelOpen())">
-        {{ 'shop.filters' | t }}
-      </button>
+<button
+  type="button"
+  class="btn btn-outline shop__filter-toggle"
+  (click)="toggleFilterPanel()"
+>
+  {{ 'shop.filters' | t }}
+</button>
       <select class="shop__sort" [ngModel]="query.sort" (ngModelChange)="onSortChange($event)" [attr.aria-label]="'shop.sortBy' | t">
         <option value="newest">{{ 'shop.sortNewest' | t }}</option>
         <option value="price_asc">{{ 'shop.sortPriceAsc' | t }}</option>
@@ -19,7 +23,14 @@
     <aside class="shop__filters" [class.is-open]="isFilterPanelOpen()">
       <div class="shop__filters-header">
         <p class="text-h3">{{ 'shop.filters' | t }}</p>
-        <button type="button" class="shop__filters-close" (click)="isFilterPanelOpen.set(false)" aria-label="Close filters">✕</button>
+       <button
+  type="button"
+  class="shop__filters-close"
+  (click)="closeFilterPanel(); $event.stopPropagation()"
+  aria-label="Close filters"
+>
+  <span aria-hidden="true">✕</span>
+</button>
       </div>
 
       <div class="filter-group">
@@ -64,7 +75,11 @@
       </div>
     </aside>
 
-    <div class="shop__filters-backdrop" [class.is-visible]="isFilterPanelOpen()" (click)="isFilterPanelOpen.set(false)"></div>
+ <div
+  class="shop__filters-backdrop"
+  [class.is-visible]="isFilterPanelOpen()"
+  (click)="closeFilterPanel()"
+></div>
 
     <div class="shop__results">
       @if (meta(); as m) {
