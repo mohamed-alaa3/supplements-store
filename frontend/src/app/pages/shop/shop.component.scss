@@ -292,7 +292,21 @@
     gap: var(--space-sm);
   }
 }
+/* =========================================================
+   DRAWER DIRECTION (LTR / RTL)
+   -110% => slide out past the left edge  (LTR, drawer anchored left)
+   +110% => slide out past the right edge (RTL, drawer anchored right)
+   :host-context() is the Angular-safe way to read <html dir="rtl">
+   from inside a component stylesheet.
+========================================================= */
 
+.shop__filters {
+  --_hide: -110%;
+}
+
+:host-context([dir='rtl']) .shop__filters {
+  --_hide: 110%;
+}
 
 /* =========================================================
    TABLET
@@ -388,24 +402,32 @@
 
     overflow-y: auto;
 
-    transform: translateX(-110%);
+    /* ---- Hidden state ----
+       The drawer is anchored to the inline-start edge
+       (left in LTR, right in RTL). To hide it we push it past THAT
+       edge, so the direction of the push depends on the writing
+       direction. We express it as a variable (--_hide) that is
+       flipped for RTL in the :host-context rule further below,
+       instead of a descendant selector like `html[dir=rtl] &`
+       (which Angular's style encapsulation breaks). */
+    transform: translateX(var(--_hide));
+    visibility: hidden;
+    pointer-events: none;
 
     transition:
-      transform var(--dur-slow) var(--ease-standard);
-  }
+      transform var(--dur-slow) var(--ease-standard),
+      visibility 0s linear var(--dur-slow);
 
+    /* ---- Open state ---- */
+    &.is-open {
+      transform: translateX(0);
+      visibility: visible;
+      pointer-events: auto;
 
-  html[dir="rtl"] .shop__filters {
-    inset-inline-start: auto;
-
-    inset-inline-end: 0;
-
-    transform: translateX(110%);
-  }
-
-
-  .shop__filters.is-open {
-    transform: translateX(0);
+      transition:
+        transform var(--dur-slow) var(--ease-standard),
+        visibility 0s linear 0s;
+    }
   }
 
 
@@ -418,17 +440,30 @@
      Backdrop
   ------------------------------------------------------- */
 
-  .shop__filters-backdrop.is-visible {
-
+  .shop__filters-backdrop {
     display: block;
-
     position: fixed;
-
     inset: 0;
-
     z-index: 999;
-
     background: rgba(0, 0, 0, 0.45);
+
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+
+    transition:
+      opacity var(--dur-fast) var(--ease-standard),
+      visibility 0s linear var(--dur-fast);
+
+    &.is-visible {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+
+      transition:
+        opacity var(--dur-fast) var(--ease-standard),
+        visibility 0s linear 0s;
+    }
   }
 
 
@@ -442,7 +477,6 @@
     gap: var(--space-sm);
   }
 }
-
 
 /* =========================================================
    MOBILE
@@ -659,7 +693,10 @@
 
 @media (prefers-reduced-motion: reduce) {
 
-  .shop__filters {
+  .shop__filters,
+  .shop__filters.is-open,
+  .shop__filters-backdrop,
+  .shop__filters-backdrop.is-visible {
     transition: none;
   }
 

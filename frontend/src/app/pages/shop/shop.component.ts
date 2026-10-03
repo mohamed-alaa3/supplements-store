@@ -1,26 +1,40 @@
-import { CommonModule } from '@angular/common';
-import { Component, OnInit, signal } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { Subject, combineLatest, of } from 'rxjs';
-import { catchError, debounceTime, switchMap } from 'rxjs/operators';
+import { CommonModule } from "@angular/common";
+import {
+  Component,
+  DestroyRef,
+  HostListener,
+  OnInit,
+  computed,
+  inject,
+  signal,
+} from "@angular/core";
+import { FormsModule } from "@angular/forms";
+import { ActivatedRoute, Router, RouterLink } from "@angular/router";
+import { Subject, combineLatest, of } from "rxjs";
+import { catchError, debounceTime, switchMap } from "rxjs/operators";
 
-import { Brand, Category, PaginationMeta, ProductListItem, ProductQueryParams } from '../../core/models';
-import { ProductService } from '../../core/services/product.service';
-import { CategoryService } from '../../core/services/category.service';
-import { BrandService } from '../../core/services/brand.service';
-import { WishlistService } from '../../core/services/wishlist.service';
-import { LanguageService } from '../../core/services/language.service';
-import { ToastService } from '../../core/services/toast.service';
-import { AuthService } from '../../core/services/auth.service';
+import {
+  Brand,
+  Category,
+  PaginationMeta,
+  ProductListItem,
+  ProductQueryParams,
+} from "../../core/models";
+import { ProductService } from "../../core/services/product.service";
+import { CategoryService } from "../../core/services/category.service";
+import { BrandService } from "../../core/services/brand.service";
+import { WishlistService } from "../../core/services/wishlist.service";
+import { LanguageService } from "../../core/services/language.service";
+import { ToastService } from "../../core/services/toast.service";
+import { AuthService } from "../../core/services/auth.service";
 
-import { TranslatePipe } from '../../core/i18n/translate.pipe';
-import { RevealDirective } from '../../core/motion/reveal.directive';
-import { ProductCardComponent } from '../../shared/components/product-card/product-card.component';
-import { LoadingSkeletonComponent } from '../../shared/components/loading-skeleton/loading-skeleton.component';
-import { EmptyStateComponent } from '../../shared/components/empty-state/empty-state.component';
+import { TranslatePipe } from "../../core/i18n/translate.pipe";
+import { RevealDirective } from "../../core/motion/reveal.directive";
+import { ProductCardComponent } from "../../shared/components/product-card/product-card.component";
+import { LoadingSkeletonComponent } from "../../shared/components/loading-skeleton/loading-skeleton.component";
+import { EmptyStateComponent } from "../../shared/components/empty-state/empty-state.component";
 
-type AsyncState = 'loading' | 'success' | 'empty' | 'error';
+type AsyncState = "loading" | "success" | "empty" | "error";
 
 @Component({
   selector: "app-shop",
@@ -28,7 +42,6 @@ type AsyncState = 'loading' | 'success' | 'empty' | 'error';
   imports: [
     CommonModule,
     FormsModule,
-    RouterLink,
     TranslatePipe,
     RevealDirective,
     ProductCardComponent,
@@ -46,6 +59,24 @@ export class ShopComponent implements OnInit {
   categories = signal<Category[]>([]);
   brands = signal<Brand[]>([]);
   isFilterPanelOpen = signal(false);
+
+  /**
+   * True while the viewport is in "drawer mode" (<= 960px). Driven by
+   * matchMedia so it always agrees with the @media (max-width: 960px)
+   * rule in shop.component.scss — no resize handler, no timers.
+   */
+  readonly isDrawerMode = signal(false);
+
+  /**
+   * The drawer is only "hidden" (inert + aria-hidden) when it is
+   * actually acting as a closed drawer. On desktop the filters are a
+   * normal sidebar and must stay interactive.
+   */
+  readonly isDrawerHidden = computed(
+    () => this.isDrawerMode() && !this.isFilterPanelOpen(),
+  );
+
+  private readonly destroyRef = inject(DestroyRef);
 
   query: ProductQueryParams = { page: 1, limit: 12, sort: "newest" };
   minPriceInput?: number;
@@ -77,6 +108,8 @@ export class ShopComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.watchDrawerBreakpoint();
+
     this.fetch$
       .pipe(
         debounceTime(120),
@@ -124,6 +157,32 @@ export class ShopComponent implements OnInit {
     );
 
     if (this.auth.isAuthenticated()) this.wishlist.refresh().subscribe();
+  }
+  // --- Drawer safety ---
+  // Keep isDrawerMode in sync with the CSS breakpoint (960px) and close
+  // the drawer when leaving drawer mode, so a stale "open" state can't
+  // reappear after a resize / rotation.
+  private watchDrawerBreakpoint(): void {
+    if (typeof window === "undefined" || !window.matchMedia) return;
+
+    const mq = window.matchMedia("(max-width: 960px)");
+    this.isDrawerMode.set(mq.matches);
+
+    const onChange = (e: MediaQueryListEvent) => {
+      this.isDrawerMode.set(e.matches);
+      if (!e.matches) this.isFilterPanelOpen.set(false);
+    };
+
+    mq.addEventListener("change", onChange);
+    this.destroyRef.onDestroy(() => mq.removeEventListener("change", onChange));
+  }
+
+  // Close the drawer with the Escape key for a11y.
+  @HostListener("document:keydown.escape")
+  onEscape(): void {
+    if (this.isFilterPanelOpen()) {
+      this.isFilterPanelOpen.set(false);
+    }
   }
 
   private flattenCategories(cats: Category[]): Category[] {
